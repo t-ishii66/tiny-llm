@@ -1,0 +1,60 @@
+# tiny-LLM
+
+A single-file Transformer implementation designed to teach the core algorithms behind large language models — self-attention, Query/Key/Value, multi-head attention, and next-token prediction — in the most concise Python code possible.
+
+## What This Is
+
+This project strips a GPT-style Transformer down to its bare essentials. The entire model fits in one file (`tiny_llm.py`, ~260 lines) and trains in seconds on a toy corpus. The forward pass is written by hand; only backpropagation is delegated to PyTorch's autograd.
+
+```
+"the cat sat on" → Transformer → "the" (predicted next word)
+```
+
+## What You'll Learn
+
+- **Embedding**: how words become vectors
+- **Positional Encoding**: how position information is injected
+- **Self-Attention (Q, K, V)**: how tokens attend to each other
+- **Multi-Head Attention**: how multiple attention patterns work in parallel
+- **Causal Masking**: how future tokens are hidden during training
+- **Feed-Forward Network**: how each token is individually transformed
+- **Residual Connections & Layer Norm**: how deep networks stay trainable
+- **Training with Cross-Entropy Loss**: how the model learns to predict the next word
+- **Text Generation**: how trained models produce text one token at a time
+
+## Simplifications
+
+This is a learning tool, not a production model. Key simplifications include:
+
+| Aspect | tiny-LLM | Production LLMs |
+|--------|----------|-----------------|
+| Tokenizer | Whitespace split (word = token) | BPE / SentencePiece (subword) |
+| Vocabulary | 10 words | 50,000–200,000+ tokens |
+| Parameters | ~40,000 | Billions to trillions |
+| Training data | 40 words | Trillions of tokens |
+| Generation | Greedy (argmax) | Sampling with temperature, top-k, top-p |
+| Dropout / regularization | None | Dropout, weight decay, etc. |
+
+## Why It's Still Useful
+
+Despite these simplifications, the core algorithms are **identical** to those used in GPT, LLaMA, and other state-of-the-art models. The difference is scale, not structure. Understanding this code gives you a solid foundation for reading real-world Transformer implementations, because every concept here — Q/K/V projections, scaled dot-product attention, causal masks, residual connections, layer normalization, and autoregressive generation — carries over directly.
+
+## Quick Start
+
+```bash
+pip install torch
+python tiny_llm.py
+```
+
+## Documentation
+
+Detailed explanations with concrete examples (in Japanese):
+
+1. **[Data Preparation](docs/01_data.md)** — Vocabulary, tokenization, and training data construction
+2. **[Transformer](docs/02_transformer.md)** — Embedding, self-attention, FFN, and the full forward pass
+3. **[Training](docs/03_training.md)** — Loss function, backpropagation, and parameter updates
+4. **[Generation](docs/04_generation.md)** — Next-word prediction and the path to real LLMs
+
+## License
+
+MIT
