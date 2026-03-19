@@ -5,12 +5,12 @@ title: tiny-LLM — 最小の Transformer で LLM を学ぶ
 
 # tiny-LLM
 
-**たった1ファイル・260行で Transformer の全てを学ぶ**
+**たった1ファイル・実コード約140行で Transformer の全体像を学ぶ**
 
 tiny-LLM は、GPT などの大規模言語モデル（LLM）のコアアルゴリズムを
 最小限のコードで実装したプロジェクトです。
 Self-Attention、Query/Key/Value、マルチヘッド、残差接続——
-本物の LLM と **まったく同じ仕組み** を、手を動かしながら理解できます。
+本物の LLM と **ほとんど同じ仕組み** を、手を動かしながら理解できます。
 
 ```
 "the cat sat on" → Transformer → "the" (次の単語を予測)
@@ -53,7 +53,7 @@ pip install torch
 python tiny_llm.py
 ```
 
-実行すると、訓練の経過と生成結果が表示されます：
+実行すると、訓練の経過と生成結果が表示されます（数値は実行のたびに多少変わります）：
 
 ```
 epoch   20  loss=1.9469
@@ -84,7 +84,7 @@ output: the cat sat on the mat . the dog sat on the log .
 
 ## ソースコード
 
-- [tiny_llm.py](https://github.com/t-ishii66/tiny-llm/blob/main/tiny_llm.py) — 全実装（1ファイル、約260行）
+- [tiny_llm.py](https://github.com/t-ishii66/tiny-llm/blob/main/tiny_llm.py) — 全実装（1ファイル、実コード約140行）
 - [GitHub リポジトリ](https://github.com/t-ishii66/tiny-llm)
 
 ---

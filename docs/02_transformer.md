@@ -267,18 +267,18 @@ Q と K が揃ったら、内積で「一致度」を測ります：
 
 $$\text{score}(i, j) = \frac{Q_i \cdot K_j^T}{\sqrt{d_k}}$$
 
-attn 行列の **1つの要素** は、$Q_i$ と $K_j$ という **64次元ベクトル同士の内積** から生まれます。
-つまり、64個の数値をペアで掛けて足し合わせた、1つのスカラー値です。
+attn 行列の **1つの要素** は、$Q_i$ と $K_j$ というベクトル同士の内積から生まれます
+（Multi-Head 分割後は **16次元**、分割前なら 64次元）。
 $Q_i$ は各単語の Query なので **12個**（$Q_0$ 〜 $Q_{11}$）、
 $K_j$ も同様に **12個**（$K_0$ 〜 $K_{11}$）あります。
 全ての組み合わせ（12 × 12 = 144通り）で内積を取ると、**12×12 の attn 行列** になります：
 
 ```
-Q₂ = [0.12, -0.08, 0.05, 0.21, ...]   ← "sat" の Query（64次元）
-K₁ = [0.09,  0.15, 0.03, 0.18, ...]   ← "cat" の Key  （64次元）
+Q₂ = [0.12, -0.08, 0.05, 0.21, ...]   ← "sat" の Query（16次元 ×4ヘッド）
+K₁ = [0.09,  0.15, 0.03, 0.18, ...]   ← "cat" の Key  （16次元 ×4ヘッド）
 
-内積 = 0.12×0.09 + (-0.08)×0.15 + 0.05×0.03 + 0.21×0.18 + ... (64項の和)
-     = 2.1（1つのスカラー値）
+1ヘッド分の内積 = 0.12×0.09 + (-0.08)×0.15 + 0.05×0.03 + 0.21×0.18 + ... (16項の和)
+               = 2.1（1つのスカラー値）
 ```
 
 この計算を、全ての (i, j) の組み合わせで行うと 12×12 のスコア行列ができます。
@@ -292,7 +292,7 @@ K₁ = [0.09,  0.15, 0.03, 0.18, ...]   ← "cat" の Key  （64次元）
   Q₂ · K₂("sat") = 0.8   ← 自分自身にもそこそこ
 ```
 
-$\sqrt{d_k}$（= $\sqrt{16}$ = 4）で割るのは、64次元もの内積は値が大きくなりすぎて
+$\sqrt{d_k}$（= $\sqrt{16}$ = 4）で割るのは、次元数が大きいと内積の値が大きくなりすぎて
 softmax が極端な分布（ほぼ0とほぼ1だけ）になるのを防ぐためです。
 これは統計的に導出できる正規化です。
 
@@ -329,7 +329,7 @@ $$\text{attn}(i, j) = \text{softmax}_j(\text{score}(i, j))$$
         "the"  "cat"  "sat"  "on"   ...   "the"
 i=0 "the" [ 1.00   0      0      0    ...   0    ]
 i=1 "cat" [ 0.35   0.65   0      0    ...   0    ]
-i=2 "sat" [ 0.11   0.70   0.19   0    ...   0    ]
+i=2 "sat" [ 0.11   0.70   0.19   0    ...   0    ]  ← 上の softmax 例と同じ値
 i=3 "on"  [ 0.05   0.10   0.60   0.25 ...   0    ]
  :                    :
 i=11"the" [ 0.02   0.03   0.05   0.04 ...   0.12 ]
@@ -564,7 +564,7 @@ softmax 後:
      0     1     2
 0 [ 1.0   0.0   0.0]    ← "the" は自分だけ見える（合計 1.0）
 1 [ 0.35  0.65  0.0]    ← "cat" は "the" と自分（合計 1.0）
-2 [ 0.15  0.55  0.30]   ← "sat" は全員見える（合計 1.0）
+2 [ 0.11  0.70  0.19]   ← "sat" は全員見える（合計 1.0）
 ```
 
 **Step 6: Value の重み付き和**
@@ -595,22 +595,22 @@ attn_weights (12×12)          V (12×16)
                                V₀("the") = [0.03, -0.01, 0.05, ...]  ← 16次元
  "the" → [ 1.0   0    0  ...]  V₁("cat") = [0.07,  0.12, -0.03, ...]
  "cat" → [ 0.35  0.65 0  ...]  V₂("sat") = [0.01,  0.08,  0.04, ...]
- "sat" → [ 0.15  0.55 0.30 ...]    :
+ "sat" → [ 0.11  0.70 0.19 ...]    :
    :            :                V₁₁("the") = [...]
 ```
 
 行列の掛け算により、"sat" の行（i=2）の出力は：
 
 ```
-out₂ = 0.15 × V₀("the") + 0.55 × V₁("cat") + 0.30 × V₂("sat") + 0 + 0 + ...
+out₂ = 0.11 × V₀("the") + 0.70 × V₁("cat") + 0.19 × V₂("sat") + 0 + 0 + ...
                                                                     ↑ 因果マスクで0
 
-     = [0.15×0.03 + 0.55×0.07 + 0.30×0.01,      ← 16次元ベクトルの第1要素
-        0.15×(-0.01) + 0.55×0.12 + 0.30×0.08,    ← 第2要素
+     = [0.11×0.03 + 0.70×0.07 + 0.19×0.01,      ← 16次元ベクトルの第1要素
+        0.11×(-0.01) + 0.70×0.12 + 0.19×0.08,    ← 第2要素
         ...]                                       ← ...計16個
 ```
 
-→ "cat" の Value が最も多く混ざった（×0.55）、新しい "sat" の 16 次元ベクトルが得られます。
+→ "cat" の Value が最も多く混ざった（×0.70）、新しい "sat" の 16 次元ベクトルが得られます。
 全トークンについてこれが同時に計算され、結果は (12, 16) の行列になります。
 
 **Step 7: ヘッドの結合と出力射影**
@@ -753,13 +753,15 @@ FFN は「各単語の表現を個別に変換する」役割を担います。
 
 ```python
 def transformer_block(x, layer):
-    # Multi-head self-attention with residual connection
-    attn_out = self_attention(x, layer["Wq"], layer["Wk"], layer["Wv"], layer["Wo"])
-    x = layer_norm(x + attn_out, layer["ln1_g"], layer["ln1_b"])
+    # Pre-LN: layer norm → self-attention → residual
+    normed = layer_norm(x, layer["ln1_g"], layer["ln1_b"])
+    attn_out = self_attention(normed, layer["Wq"], layer["Wk"], layer["Wv"], layer["Wo"])
+    x = x + attn_out
 
-    # Feed-forward with residual connection
-    ff_out = feed_forward(x, layer["W1"], layer["b1"], layer["W2"], layer["b2"])
-    x = layer_norm(x + ff_out, layer["ln2_g"], layer["ln2_b"])
+    # Pre-LN: layer norm → feed-forward → residual
+    normed = layer_norm(x, layer["ln2_g"], layer["ln2_b"])
+    ff_out = feed_forward(normed, layer["W1"], layer["b1"], layer["W2"], layer["b2"])
+    x = x + ff_out
     return x
 ```
 
@@ -791,22 +793,25 @@ def transformer_block(x, layer):
 > `self.layers = [layer0, layer1]` というリストに格納されます。
 > 層ごとにパラメータは別々で、独立に学習されます。
 
-### 構造図
+### 構造図（Pre-LN: GPT-2+ 方式）
 
 ```
 入力 x ──────────────────┐
   │                      │ Residual Connection（残差接続）
+  ▼                      │
+Layer Norm               │
+  │                      │
   ▼                      │
 Self-Attention           │
   │                      │
   ▼                      │
   + ◄────────────────────┘
   │
-  ▼
-Layer Norm
-  │
   ├──────────────────────┐
   │                      │ Residual Connection
+  ▼                      │
+Layer Norm               │
+  │                      │
   ▼                      │
 Feed-Forward             │
   │                      │
@@ -814,11 +819,13 @@ Feed-Forward             │
   + ◄────────────────────┘
   │
   ▼
-Layer Norm
-  │
-  ▼
 出力 x
 ```
+
+> **Pre-LN vs Post-LN:** オリジナルの Transformer (2017) と GPT-1 では
+> 「サブレイヤー → 残差加算 → Layer Norm」の順（Post-LN）でした。
+> GPT-2 以降は「Layer Norm → サブレイヤー → 残差加算」の順（Pre-LN）に変更され、
+> 訓練がより安定することがわかりました。本プログラムは GPT-2+ と同じ Pre-LN を使っています。
 
 ### Residual Connection（残差接続）とは
 
