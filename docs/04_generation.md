@@ -38,7 +38,7 @@ def generate(model, prompt, vocab, id2word, max_tokens=20):
     tokens = tokenize(prompt, vocab)
 
     for _ in range(max_tokens):
-        context = tokens[-SEQ_LEN:]                   # 直近16トークンを取得
+        context = tokens[-SEQ_LEN:]                   # 直近12トークンを取得
         x = torch.tensor([context])                   # (1, T)
         logits = model.forward(x)                     # (1, T, 10)
         next_logit = logits[0, -1, :]                 # 最後の位置のスコア
@@ -60,7 +60,7 @@ tokens = tokenize("the cat sat on", vocab)
 **Step 2: Transformer に通す**
 
 ```python
-context = tokens[-SEQ_LEN:]    # [1, 2, 3, 4]  ← 直近16トークン（今は4つだけ）
+context = tokens[-SEQ_LEN:]    # [1, 2, 3, 4]  ← 直近12トークン（今は4つだけ）
 x = torch.tensor([context])    # shape: (1, 4)
 logits = model.forward(x)      # shape: (1, 4, 10)
 ```

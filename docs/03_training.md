@@ -51,10 +51,10 @@ def train(model, inputs, targets):
 ## 3.3 ① Forward — 予測を出す
 
 ```python
-logits = model.forward(inputs)   # (24, 16, 10)
+logits = model.forward(inputs)   # (28, 12, 10)
 ```
 
-前章で解説した処理そのものです。24 サンプル × 16 位置のそれぞれで、
+前章で解説した処理そのものです。28 サンプル × 12 位置のそれぞれで、
 10 単語の「スコア」が出力されます。
 
 ---
@@ -65,8 +65,8 @@ logits = model.forward(inputs)   # (24, 16, 10)
 
 ```python
 loss = F.cross_entropy(
-    logits.view(-1, model.vocab_size),   # (384, 10) ← 24×16=384 予測
-    targets.view(-1),                     # (384,)    ← 384 個の正解
+    logits.view(-1, model.vocab_size),   # (336, 10) ← 28×12=336 予測
+    targets.view(-1),                     # (336,)    ← 336 個の正解
 )
 ```
 
@@ -245,7 +245,7 @@ Loss:    約 0.11（ほぼ完璧）
 | パラメータ | 形状 | 何を学ぶか |
 |-----------|------|-----------|
 | `tok_emb` | (10, 64) | 各単語の意味ベクトル |
-| `pos_emb` | (16, 64) | 各位置の情報ベクトル |
+| `pos_emb` | (12, 64) | 各位置の情報ベクトル |
 | `Wq, Wk, Wv` | (64, 64) ×3 ×2層 | Attention の問い合わせ方 |
 | `Wo` | (64, 64) ×2層 | Attention 出力の統合方法 |
 | `W1, b1` | (64,128), (128,) ×2層 | FFN の変換（前半） |
