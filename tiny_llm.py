@@ -46,7 +46,7 @@ D_MODEL = 64       # Embedding dimension — size of each word vector
 N_HEADS = 4        # Number of attention heads (D_MODEL must be divisible by this)
 D_FF = 128         # Hidden dimension of the feed-forward network
 N_LAYERS = 2       # Number of stacked transformer blocks
-SEQ_LEN = 16       # Maximum sequence length (context window size)
+SEQ_LEN = 12       # Maximum sequence length (context window size)
 EPOCHS = 200       # Number of training iterations over the full dataset
 LR = 0.001         # Learning rate for Adam optimizer
 
@@ -114,7 +114,7 @@ class TinyTransformer:
         self.tok_emb = param(vocab_size, D_MODEL)
 
         # pos_emb: one learnable vector per position in the sequence
-        #   shape: (SEQ_LEN, D_MODEL) = (16, 64)
+        #   shape: (SEQ_LEN, D_MODEL) = (12, 64)
         self.pos_emb = param(SEQ_LEN, D_MODEL)
 
         # --- Transformer layers ---
@@ -371,15 +371,15 @@ def make_training_data(text, vocab):
         vocab: Word-to-id mapping
 
     Returns:
-        inputs:  Integer tensor, shape (num_samples, SEQ_LEN) e.g. (24, 16)
-        targets: Integer tensor, shape (num_samples, SEQ_LEN) e.g. (24, 16)
+        inputs:  Integer tensor, shape (num_samples, SEQ_LEN) e.g. (28, 12)
+        targets: Integer tensor, shape (num_samples, SEQ_LEN) e.g. (28, 12)
     """
     tokens = tokenize(text, vocab)  # Convert entire corpus to list of ids
 
     # Slide a window across the token sequence
     inputs, targets = [], []
     for i in range(len(tokens) - SEQ_LEN):
-        inputs.append(tokens[i : i + SEQ_LEN])       # 16 tokens as input
+        inputs.append(tokens[i : i + SEQ_LEN])       # 12 tokens as input
         targets.append(tokens[i + 1 : i + SEQ_LEN + 1])  # shifted by 1 as target
     return torch.tensor(inputs), torch.tensor(targets)
 
@@ -404,15 +404,15 @@ def train(model, inputs, targets):
 
     for epoch in range(EPOCHS):
         # --- 1. Forward pass: compute predictions ---
-        logits = model.forward(inputs)  # (B, T, vocab_size) e.g. (24, 16, 10)
+        logits = model.forward(inputs)  # (B, T, vocab_size) e.g. (28, 12, 10)
 
         # --- 2. Compute loss: how wrong are the predictions? ---
         # Cross-entropy loss = -log(probability assigned to the correct word).
         # Low loss = model is confident about the right answer.
         # We flatten (B, T) into a single dimension for the loss function.
         loss = F.cross_entropy(
-            logits.view(-1, model.vocab_size),  # (B*T, vocab_size) = (384, 10)
-            targets.view(-1),                    # (B*T,) = (384,)
+            logits.view(-1, model.vocab_size),  # (B*T, vocab_size) = (336, 10)
+            targets.view(-1),                    # (B*T,) = (336,)
         )
 
         # --- 3. Backward pass: compute gradients ---

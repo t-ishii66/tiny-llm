@@ -56,6 +56,24 @@ def build_vocab(text):
 
 語彙数は **10**。本物の LLM では数万〜数十万ですが、仕組みは同じです。
 
+> **数値の読み方:** 本プロジェクトでは、すべての主要な数値が異なる値に
+> なるよう設計しています。テンソルの形状に現れる数値を見れば、
+> それが何を意味しているか即座にわかります：
+>
+> | 数値 | 意味 |
+> |------|------|
+> | **2** | Transformer の層数（N_LAYERS） |
+> | **4** | Attention ヘッド数（N_HEADS） |
+> | **10** | 語彙数（vocab_size） |
+> | **12** | シーケンス長（SEQ_LEN） |
+> | **16** | ヘッドの次元数（head_dim = 64 ÷ 4） |
+> | **28** | 訓練サンプル数（40トークン − 12） |
+> | **64** | 埋め込み次元（D_MODEL） |
+> | **128** | FFN の隠れ層次元（D_FF） |
+>
+> 例えばテンソル形状 `(28, 12, 64)` を見たら、
+> 「28サンプル × 12トークン × 64次元の埋め込み」と即座に読めます。
+
 > **本物との違い:** GPT などは BPE（Byte Pair Encoding）で単語をさらに
 > サブワードに分割します。ここでは「トークン＝単語」と簡略化しています。
 
@@ -111,10 +129,10 @@ def make_training_data(text, vocab):
 ### 何をしているか
 
 1. コーパス全体をトークン列に変換する
-2. 長さ `SEQ_LEN`（=16）のウィンドウをスライドさせる
+2. 長さ `SEQ_LEN`（=12）のウィンドウをスライドさせる
 3. 各ウィンドウで **入力（input）** と **正解（target）** のペアを作る
 
-### 具体例（SEQ_LEN=16 の場合）
+### 具体例（SEQ_LEN=12 の場合）
 
 コーパスのトークン列（全40トークン）:
 
@@ -128,19 +146,19 @@ def make_training_data(text, vocab):
 
 ```
 i=0:
-  input  = tokens[ 0:16] = [1,2,3,4,1,5,6,1,7,3,4,1,8,6,1,2]
-  target = tokens[ 1:17] = [2,3,4,1,5,6,1,7,3,4,1,8,6,1,2,9]
+  input  = tokens[ 0:12] = [1,2,3,4,1,5,6,1,7,3,4,1]
+  target = tokens[ 1:13] = [2,3,4,1,5,6,1,7,3,4,1,8]
                               ↑ input の各位置の「次の単語」が target
 
 i=1:
-  input  = tokens[ 1:17] = [2,3,4,1,5,6,1,7,3,4,1,8,6,1,2,9]
-  target = tokens[ 2:18] = [3,4,1,5,6,1,7,3,4,1,8,6,1,2,9,1]
+  input  = tokens[ 1:13] = [2,3,4,1,5,6,1,7,3,4,1,8]
+  target = tokens[ 2:14] = [3,4,1,5,6,1,7,3,4,1,8,6]
 
 i=2:
-  input  = tokens[ 2:18] = [3,4,1,5,6,1,7,3,4,1,8,6,1,2,9,1]
-  target = tokens[ 3:19] = [4,1,5,6,1,7,3,4,1,8,6,1,2,9,1,7]
+  input  = tokens[ 2:14] = [3,4,1,5,6,1,7,3,4,1,8,6]
+  target = tokens[ 3:15] = [4,1,5,6,1,7,3,4,1,8,6,1]
 
-  ...（合計 24 サンプル）
+  ...（合計 28 サンプル）
 ```
 
 ### target は input を1つずらしたもの
@@ -160,8 +178,8 @@ target:  cat  sat  on   the  mat   .   the  dog  ...
 ### 戻り値の形状
 
 ```
-inputs:  torch.Tensor, shape = (24, 16)    ← 24サンプル × 16トークン
-targets: torch.Tensor, shape = (24, 16)    ← 対応する正解
+inputs:  torch.Tensor, shape = (28, 12)    ← 28サンプル × 12トークン
+targets: torch.Tensor, shape = (28, 12)    ← 対応する正解
 ```
 
 ---
@@ -177,8 +195,8 @@ targets: torch.Tensor, shape = (24, 16)    ← 対応する正解
 "the cat sat on ..."  ─────────────→  [1, 2, 3, 4, 1, 5, 6, ...]
 
                       make_training_data
-[1, 2, 3, 4, ...]    ─────────────→  inputs:  tensor (24, 16)
-                                       targets: tensor (24, 16)
+[1, 2, 3, 4, ...]    ─────────────→  inputs:  tensor (28, 12)
+                                       targets: tensor (28, 12)
 ```
 
 ここまでで、モデルに渡す準備が整いました。
@@ -194,4 +212,4 @@ targets: torch.Tensor, shape = (24, 16)    ← 対応する正解
 |------|------|------|------|
 | `build_vocab(text)` | 文字列 | `vocab` (dict), `id2word` (dict) | 単語に番号を振る |
 | `tokenize(text, vocab)` | 文字列, vocab | `[int, ...]` (list) | 文章を番号列に変換 |
-| `make_training_data(text, vocab)` | 文字列, vocab | `inputs` (24,16), `targets` (24,16) | 学習用ペアを作成 |
+| `make_training_data(text, vocab)` | 文字列, vocab | `inputs` (28,12), `targets` (28,12) | 学習用ペアを作成 |
