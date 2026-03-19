@@ -30,7 +30,7 @@ This is a learning tool, not a production model. Key simplifications include:
 |--------|----------|-----------------|
 | Tokenizer | Whitespace split (word = token) | BPE / SentencePiece (subword) |
 | Vocabulary | 10 words | 50,000–200,000+ tokens |
-| Parameters | ~40,000 | Billions to trillions |
+| Parameters | ~68,000 | Billions to trillions |
 | Training data | 40 words | Trillions of tokens |
 | Generation | Greedy (argmax) | Sampling with temperature, top-k, top-p |
 | Dropout / regularization | None | Dropout, weight decay, etc. |

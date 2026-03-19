@@ -50,6 +50,11 @@ python tiny_llm.py
 以下のような出力が表示されます（数値は実行のたびに多少変わります）：
 
 ```
+vocab size: 10
+vocab: {'<pad>': 0, 'the': 1, 'cat': 2, 'sat': 3, 'on': 4, 'mat': 5, '.': 6, 'dog': 7, 'log': 8, 'saw': 9}
+
+training samples: 28, seq_len: 12
+
 epoch   20  loss=1.9469
 epoch   40  loss=1.5257
 epoch   60  loss=0.8140
@@ -61,6 +66,7 @@ epoch  160  loss=0.2227
 epoch  180  loss=0.1862
 epoch  200  loss=0.1147
 
+--- Generation ---
 prompt: "the cat sat on"
 output: the cat sat on the mat . the dog sat on the log . the cat saw the dog . the dog saw the
 
@@ -104,7 +110,7 @@ output: the cat sat on the mat . the dog sat on the log ...
 たった数秒で、以下が実行されました：
 
 1. **データ準備**: 40単語のコーパスを数値に変換し、訓練データを作成
-2. **モデル構築**: 約40,000パラメータの Transformer を初期化
+2. **モデル構築**: 約68,000パラメータの Transformer を初期化
 3. **訓練**: 200回の学習ループで「次の単語の予測」を学習
 4. **生成**: 学習済みモデルでテキストを生成
 
