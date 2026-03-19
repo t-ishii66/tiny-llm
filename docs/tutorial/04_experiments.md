@@ -7,7 +7,7 @@
 
 ## 4.1 コーパスを変えてみる
 
-`tiny_llm.py` の `main()` 関数にあるコーパスを変えてみましょう：
+`tiny_llm.py` の `if __name__ == "__main__":` ブロックにあるコーパスを変えてみましょう：
 
 ```python
 # 元のコーパス
@@ -94,19 +94,23 @@ EPOCHS = 1000  # 多すぎても、この小さなコーパスでは過学習す
 `generate()` 関数では `argmax`（常に最高スコア）で次の単語を選んでいます。
 これを確率的なサンプリングに変えてみましょう：
 
+> **注意**: ここでも prompt は学習コーパス内の単語で構成してください。
+> 語彙外単語を含む prompt は現実装では例外になります。
+
 ```python
 def generate(model, prompt, vocab, id2word, max_tokens=20, temperature=1.0):
     tokens = tokenize(prompt, vocab)
 
-    for _ in range(max_tokens):
-        context = tokens[-SEQ_LEN:]
-        x = torch.tensor([context])
-        logits = model.forward(x)
-        next_logit = logits[0, -1, :] / temperature    # ← temperature で割る
+    with torch.no_grad():
+        for _ in range(max_tokens):
+            context = tokens[-SEQ_LEN:]
+            x = torch.tensor([context])
+            logits = model.forward(x)
+            next_logit = logits[0, -1, :] / temperature    # ← temperature で割る
 
-        probs = torch.softmax(next_logit, dim=-1)      # 確率に変換
-        next_id = torch.multinomial(probs, 1).item()    # 確率に従ってサンプリング
-        tokens.append(next_id)
+            probs = torch.softmax(next_logit, dim=-1)      # 確率に変換
+            next_id = torch.multinomial(probs, 1).item()    # 確率に従ってサンプリング
+            tokens.append(next_id)
 
     return " ".join(id2word[t] for t in tokens)
 ```

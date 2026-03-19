@@ -28,7 +28,7 @@ cd tiny-llm
 
 ```
 tiny-llm/
-├── tiny_llm.py          ← 全実装（約260行）
+├── tiny_llm.py          ← 全実装（実コード約140行）
 ├── docs/                ← ドキュメント
 │   ├── 01_data.md
 │   ├── 02_transformer.md
@@ -47,7 +47,7 @@ tiny-llm/
 python tiny_llm.py
 ```
 
-以下のような出力が表示されます：
+以下のような出力が表示されます（数値は実行のたびに多少変わります）：
 
 ```
 epoch   20  loss=1.9469
@@ -93,6 +93,9 @@ output: the cat sat on the mat . the dog sat on the log ...
 - **output**: モデルが1単語ずつ予測して生成したテキスト
 
 訓練コーパスに沿った自然な英文が生成されています。
+
+> **注意**: `generate()` に渡す prompt は、学習コーパスに含まれる単語だけで作ってください。
+> コーパス外の単語（語彙外トークン）を含むと、現実装では例外になります。
 
 ---
 

@@ -132,7 +132,7 @@ class TinyTransformer:
                 "Wv": param(D_MODEL, D_MODEL),
                 "Wo": param(D_MODEL, D_MODEL),
 
-                # --- Layer norm after attention ---
+                # --- Layer norm before attention ---
                 # g = scale (gamma), b = shift (beta)
                 "ln1_g": param_ones(D_MODEL),   # (64,) initialized to 1
                 "ln1_b": param_zeros(D_MODEL),  # (64,) initialized to 0
@@ -146,7 +146,7 @@ class TinyTransformer:
                 "W2": param(D_FF, D_MODEL),     # (128, 64)
                 "b2": param_zeros(D_MODEL),      # (64,)
 
-                # --- Layer norm after FFN ---
+                # --- Layer norm before FFN ---
                 "ln2_g": param_ones(D_MODEL),
                 "ln2_b": param_zeros(D_MODEL),
             }
@@ -329,8 +329,8 @@ def feed_forward(x, W1, b1, W2, b2):
 def transformer_block(x, layer):
     """One transformer block: self-attention + FFN, each with residual + layer norm.
 
-    Structure:
-        x → self_attention → add residual → layer norm → FFN → add residual → layer norm
+    Structure (Pre-LN, GPT-2+ style):
+        x → layer norm → self_attention → add residual → layer norm → FFN → add residual
 
     Residual connections (x + sublayer_output) let gradients flow directly through
     the network, making deep models trainable. Intuitively: "keep the original
@@ -343,13 +343,15 @@ def transformer_block(x, layer):
     Returns:
         Output tensor, shape (B, T, D_MODEL)
     """
-    # Sub-block 1: Multi-head self-attention + residual + layer norm
-    attn_out = self_attention(x, layer["Wq"], layer["Wk"], layer["Wv"], layer["Wo"])
-    x = layer_norm(x + attn_out, layer["ln1_g"], layer["ln1_b"])  # residual + norm
+    # Sub-block 1: Layer norm → multi-head self-attention → residual
+    normed = layer_norm(x, layer["ln1_g"], layer["ln1_b"])
+    attn_out = self_attention(normed, layer["Wq"], layer["Wk"], layer["Wv"], layer["Wo"])
+    x = x + attn_out
 
-    # Sub-block 2: Feed-forward network + residual + layer norm
-    ff_out = feed_forward(x, layer["W1"], layer["b1"], layer["W2"], layer["b2"])
-    x = layer_norm(x + ff_out, layer["ln2_g"], layer["ln2_b"])  # residual + norm
+    # Sub-block 2: Layer norm → feed-forward → residual
+    normed = layer_norm(x, layer["ln2_g"], layer["ln2_b"])
+    ff_out = feed_forward(normed, layer["W1"], layer["b1"], layer["W2"], layer["b2"])
+    x = x + ff_out
     return x
 
 
@@ -454,21 +456,22 @@ def generate(model, prompt, vocab, id2word, max_tokens=20):
     """
     tokens = tokenize(prompt, vocab)  # Convert prompt to token ids
 
-    for _ in range(max_tokens):
-        # Take the last SEQ_LEN tokens as context (model's window size)
-        context = tokens[-SEQ_LEN:]
-        x = torch.tensor([context])           # (1, T) — batch of 1
+    with torch.no_grad():  # No gradient tracking needed during generation
+        for _ in range(max_tokens):
+            # Take the last SEQ_LEN tokens as context (model's window size)
+            context = tokens[-SEQ_LEN:]
+            x = torch.tensor([context])           # (1, T) — batch of 1
 
-        # Run forward pass to get scores for all words at each position
-        logits = model.forward(x)             # (1, T, vocab_size)
+            # Run forward pass to get scores for all words at each position
+            logits = model.forward(x)             # (1, T, vocab_size)
 
-        # We only care about the LAST position's prediction:
-        # it has seen all previous tokens and predicts what comes next
-        next_logit = logits[0, -1, :]         # (vocab_size,) — scores for next word
+            # We only care about the LAST position's prediction:
+            # it has seen all previous tokens and predicts what comes next
+            next_logit = logits[0, -1, :]         # (vocab_size,) — scores for next word
 
-        # Pick the word with the highest score (greedy decoding)
-        next_id = torch.argmax(next_logit).item()
-        tokens.append(next_id)
+            # Pick the word with the highest score (greedy decoding)
+            next_id = torch.argmax(next_logit).item()
+            tokens.append(next_id)
 
     # Convert all token ids back to words
     return " ".join(id2word[t] for t in tokens)
@@ -501,5 +504,8 @@ if __name__ == "__main__":
 
     # Step 4: Generate text from prompts
     print("\n--- Generation ---")
-    print(generate(model, "the cat sat on", vocab, id2word))
-    print(generate(model, "the dog saw", vocab, id2word))
+    prompts = ["the cat sat on", "the dog saw"]
+    for prompt in prompts:
+        print(f'prompt: "{prompt}"')
+        print(f"output: {generate(model, prompt, vocab, id2word)}")
+        print()

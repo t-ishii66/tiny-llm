@@ -37,13 +37,14 @@ ChatGPT も GPT-4 も、根本的にやっていることは同じです：
 def generate(model, prompt, vocab, id2word, max_tokens=20):
     tokens = tokenize(prompt, vocab)
 
-    for _ in range(max_tokens):
-        context = tokens[-SEQ_LEN:]                   # 直近12トークンを取得
-        x = torch.tensor([context])                   # (1, T)
-        logits = model.forward(x)                     # (1, T, 10)
-        next_logit = logits[0, -1, :]                 # 最後の位置のスコア
-        next_id = torch.argmax(next_logit).item()     # 最もスコアの高い単語
-        tokens.append(next_id)
+    with torch.no_grad():                                # 推論時は勾配計算不要
+        for _ in range(max_tokens):
+            context = tokens[-SEQ_LEN:]                  # 直近12トークンを取得
+            x = torch.tensor([context])                  # (1, T)
+            logits = model.forward(x)                    # (1, T, 10)
+            next_logit = logits[0, -1, :]                # 最後の位置のスコア
+            next_id = torch.argmax(next_logit).item()    # 最もスコアの高い単語
+            tokens.append(next_id)
 
     return " ".join(id2word[t] for t in tokens)
 ```
@@ -84,10 +85,10 @@ logits = model.forward(x)      # shape: (1, 4, 10)
 
 ```python
 next_logit = logits[0, -1, :]   # (10,) ← 最後の位置のスコア
-# 例: [0.1, 0.3, -0.2, 0.1, 0.8, 2.1, -0.3, -0.1, 0.4, 0.0]
+# 例: [0.1, 2.8, -0.2, 0.1, 0.8, 0.3, -0.3, -0.1, 0.4, 0.0]
 #      pad   the   cat  sat   on   mat    .   dog   log  saw
 
-next_id = torch.argmax(next_logit).item()   # → 5 (= "mat")
+next_id = torch.argmax(next_logit).item()   # → 1 (= "the")
 ```
 
 >
@@ -114,14 +115,14 @@ next_id = torch.argmax(next_logit).item()   # → 5 (= "mat")
 > ```
 
 `argmax` は最もスコアの高いインデックスを返します。
-→ "the cat sat on" の次は "mat" と予測。
+→ "the cat sat on" の次は "the" と予測（コーパスでは "on" の後は常に "the"）。
 
 **Step 4: トークン列に追加して繰り返す**
 
 ```python
-tokens.append(5)
-# tokens = [1, 2, 3, 4, 5]  ← "the cat sat on mat"
-# → 次のループで "the cat sat on mat" から次の単語を予測
+tokens.append(1)
+# tokens = [1, 2, 3, 4, 1]  ← "the cat sat on the"
+# → 次のループで "the cat sat on the" から次の単語を予測
 ```
 
 ### 生成の流れ（具体例）
@@ -211,9 +212,9 @@ output: the dog saw the cat . the cat sat on the log .
        ↓
    Transformer（訓練済み）
        ↓
-   "mat" を予測
+   "the" を予測
        ↓
-"the cat sat on the mat"
+"the cat sat on the"
        ↓
    Transformer
        ↓

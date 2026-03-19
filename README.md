@@ -4,7 +4,7 @@ A single-file Transformer implementation designed to teach the core algorithms b
 
 ## What This Is
 
-This project strips a GPT-style Transformer down to its bare essentials. The entire model fits in one file (`tiny_llm.py`, ~260 lines) and trains in seconds on a toy corpus. The forward pass is written by hand; only backpropagation is delegated to PyTorch's autograd.
+This project strips a GPT-style Transformer down to its bare essentials. The entire model fits in one file (`tiny_llm.py`, ~140 lines of executable code) and trains in seconds on a toy corpus. The forward pass is written by hand; only backpropagation is delegated to PyTorch's autograd.
 
 ```
 "the cat sat on" → Transformer → "the" (predicted next word)
@@ -13,7 +13,7 @@ This project strips a GPT-style Transformer down to its bare essentials. The ent
 ## What You'll Learn
 
 - **Embedding**: how words become vectors
-- **Positional Encoding**: how position information is injected
+- **Positional Embedding (learned)**: how position information is injected
 - **Self-Attention (Q, K, V)**: how tokens attend to each other
 - **Multi-Head Attention**: how multiple attention patterns work in parallel
 - **Causal Masking**: how future tokens are hidden during training
@@ -53,6 +53,7 @@ Detailed explanations with concrete examples (in Japanese):
 1. **[Data Preparation](docs/01_data.md)** — Vocabulary, tokenization, and training data construction
 2. **[Transformer](docs/02_transformer.md)** — Embedding, self-attention, FFN, and the full forward pass
 3. **[Training](docs/03_training.md)** — Loss function, backpropagation, and parameter updates
+   - **[Gradient Math Supplement](docs/03a_gradient.md)** — Derivatives, partial derivatives, and chain rule with concrete examples
 4. **[Generation](docs/04_generation.md)** — Next-word prediction and the path to real LLMs
 
 ## Credits
