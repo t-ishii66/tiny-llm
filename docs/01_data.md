@@ -34,6 +34,22 @@ def build_vocab(text):
     return vocab, {i: w for w, i in vocab.items()}
 ```
 
+>
+> **Python Tips: 辞書内包表記 `{i: w for w, i in ...}`**
+>
+> `{i: w for w, i in vocab.items()}` は **辞書内包表記（dict comprehension）** です。
+> for ループで辞書を作る短縮記法です：
+> ```python
+> # 以下の2つは同じ結果
+> id2word = {}
+> for w, i in vocab.items():
+>     id2word[i] = w
+>
+> id2word = {i: w for w, i in vocab.items()}  # 1行で書ける
+> ```
+> `vocab.items()` は `("the", 1), ("cat", 2), ...` のようなペアを返します。
+> `for w, i in ...` でそのペアを `w="the", i=1` のように分解しています。
+
 ### 何をしているか
 
 1. テキストを空白で分割して単語のリストにする
@@ -86,6 +102,20 @@ def tokenize(text, vocab):
     return [vocab[w] for w in text.split()]
 ```
 
+>
+> **Python Tips: リスト内包表記 `[... for ... in ...]`**
+>
+> `[vocab[w] for w in text.split()]` は **リスト内包表記（list comprehension）** です。
+> for ループでリストを作る短縮記法です：
+> ```python
+> # 以下の2つは同じ結果
+> result = []
+> for w in text.split():
+>     result.append(vocab[w])
+>
+> result = [vocab[w] for w in text.split()]  # 1行で書ける
+> ```
+
 ### 何をしているか
 
 文章を空白で分割し、各単語を `vocab` で番号に置き換えます。
@@ -126,6 +156,28 @@ def make_training_data(text, vocab):
     return torch.tensor(inputs), torch.tensor(targets)
 ```
 
+>
+> **Python Tips: スライス `tokens[i : i + SEQ_LEN]`**
+>
+> リストのスライスは `リスト[開始:終了]` で、開始から終了の **手前まで** を取り出します：
+> ```python
+> tokens = [1, 2, 3, 4, 5, 6, 7, 8]
+> tokens[0:3]   # → [1, 2, 3]      位置0, 1, 2（3は含まない）
+> tokens[2:5]   # → [3, 4, 5]      位置2, 3, 4
+> tokens[1:4+1] # → [2, 3, 4, 5]   i+1 から i+SEQ_LEN+1 の手前まで
+> ```
+
+>
+> **Python Tips: `torch.tensor()` — リストをテンソルに変換**
+>
+> `torch.tensor([[1,2,3], [4,5,6]])` は Python のリストを PyTorch のテンソルに変換します。
+> テンソルは「多次元配列」で、GPU演算や自動微分に対応しています：
+> ```python
+> import torch
+> x = torch.tensor([[1, 2], [3, 4]])
+> x.shape  # → torch.Size([2, 2])  ← 2行×2列
+> ```
+
 ### 何をしているか
 
 1. コーパス全体をトークン列に変換する
@@ -160,6 +212,27 @@ i=2:
 
   ...（合計 28 サンプル）
 ```
+
+>
+> **スライド幅（ストライド）について**
+>
+> 本コードではウィンドウを **1単語ずつ** スライドしています（i=0, 1, 2, ...）。
+> しかし、スライド幅は本来自由に設定できます：
+>
+> ```
+> ストライド 1:  i=0, 1, 2, 3, ...  → サンプル数 多い、重複 多い
+> ストライド 4:  i=0, 4, 8, 12, ... → サンプル数 少ない、重複 少ない
+> ストライド 12: i=0, 12, 24, ...   → 重複なし（ウィンドウが隣接）
+> ```
+>
+> - **ストライド 1** はデータを最大限に活用できますが、隣り合うサンプルの
+>   大部分が重複します
+> - **大きなストライド** は重複が減り計算が速くなりますが、サンプル数が減ります
+> - 大規模 LLM の訓練では、コーパスが十分に大きいため
+>   ストライドを大きくしても問題になりません
+>
+> 本プロジェクトではコーパスが小さいので、ストライド 1 で最大限のサンプルを
+> 生成しています。
 
 ### target は input を1つずらしたもの
 

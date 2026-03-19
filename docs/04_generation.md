@@ -48,6 +48,18 @@ def generate(model, prompt, vocab, id2word, max_tokens=20):
     return " ".join(id2word[t] for t in tokens)
 ```
 
+>
+> **Python Tips: `" ".join(...)` — リストを文字列に結合**
+>
+> `" ".join(リスト)` はリストの要素をスペースで繋いで1つの文字列にします：
+> ```python
+> words = ["the", "cat", "sat"]
+> " ".join(words)     # → "the cat sat"
+> "-".join(words)     # → "the-cat-sat"
+> ```
+> `id2word[t] for t in tokens` は **ジェネレータ式** で、
+> 各トークン番号を単語に変換しながら `join` に渡しています。
+
 ### ステップごとの説明
 
 **Step 1: プロンプトをトークン化**
@@ -77,6 +89,29 @@ next_logit = logits[0, -1, :]   # (10,) ← 最後の位置のスコア
 
 next_id = torch.argmax(next_logit).item()   # → 5 (= "mat")
 ```
+
+>
+> **Python Tips: テンソルの多次元インデックス `logits[0, -1, :]`**
+>
+> カンマ区切りで各軸の位置を指定します。`-1` は「最後」、`:` は「全部」：
+> ```python
+> x = torch.zeros(3, 4, 10)   # 3サンプル × 4位置 × 10単語
+>
+> x[0]         # → shape: (4, 10)   最初のサンプル全体
+> x[0, -1]     # → shape: (10,)     最初のサンプルの最後の位置
+> x[0, -1, :]  # → shape: (10,)     同上（: は「全部」なので省略可）
+> x[0, -1, 3]  # → スカラー         特定の1要素
+> ```
+
+>
+> **Python Tips: `torch.argmax()` — 最大値のインデックス**
+>
+> テンソルの中で最も大きい値の **位置（インデックス）** を返します：
+> ```python
+> scores = torch.tensor([0.1, 0.3, 2.1, -0.5, 0.8])
+> torch.argmax(scores)          # → tensor(2)   ← 2.1 が最大、その位置は 2
+> torch.argmax(scores).item()   # → 2            ← .item() でPythonのintに
+> ```
 
 `argmax` は最もスコアの高いインデックスを返します。
 → "the cat sat on" の次は "mat" と予測。
