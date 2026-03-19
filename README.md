@@ -48,13 +48,27 @@ python tiny_llm.py
 
 ## Documentation
 
-Detailed explanations with concrete examples (in Japanese):
+### English
 
-1. **[Data Preparation](docs/01_data.md)** — Vocabulary, tokenization, and training data construction
-2. **[Transformer](docs/02_transformer.md)** — Embedding, self-attention, FFN, and the full forward pass
-3. **[Training](docs/03_training.md)** — Loss function, backpropagation, and parameter updates
-   - **[Gradient Math Supplement](docs/03a_gradient.md)** — Derivatives, partial derivatives, and chain rule with concrete examples
-4. **[Generation](docs/04_generation.md)** — Next-word prediction and the path to real LLMs
+1. **[Data Preparation](docs/en/01_data.md)** — Vocabulary, tokenization, and training data construction
+2. **[Transformer](docs/en/02_transformer.md)** — Embedding, self-attention, FFN, and the full forward pass
+3. **[Training](docs/en/03_training.md)** — Loss function, backpropagation, and parameter updates
+   - **[Gradient Math Supplement](docs/en/03a_gradient.md)** — Derivatives, partial derivatives, and chain rule with concrete examples
+4. **[Generation](docs/en/04_generation.md)** — Next-word prediction and the path to real LLMs
+
+**Tutorial:**
+[Step 1: Setup and Run](docs/en/tutorial/01_setup.md) → [Step 2: Exploring the Data](docs/en/tutorial/02_explore_data.md) → [Step 3: Peeking Inside the Transformer](docs/en/tutorial/03_explore_model.md) → [Step 4: Experiments and Modifications](docs/en/tutorial/04_experiments.md)
+
+### 日本語
+
+1. **[データの準備](docs/ja/01_data.md)** — 語彙構築、トークン化、訓練データの作り方
+2. **[Transformer](docs/ja/02_transformer.md)** — Embedding、Self-Attention、FFN、Forward Pass の全て
+3. **[訓練](docs/ja/03_training.md)** — Cross-Entropy Loss、誤差逆伝播、パラメータ更新
+   - **[勾配の数学（補足）](docs/ja/03a_gradient.md)** — 微分・偏微分・連鎖律を具体的な数値で解説
+4. **[テキスト生成](docs/ja/04_generation.md)** — 次の単語の予測、Greedy Decoding、本物の LLM との比較
+
+**チュートリアル:**
+[Step 1: セットアップと実行](docs/ja/tutorial/01_setup.md) → [Step 2: データを観察する](docs/ja/tutorial/02_explore_data.md) → [Step 3: Transformer の中を覗く](docs/ja/tutorial/03_explore_model.md) → [Step 4: 改造してみる](docs/ja/tutorial/04_experiments.md)
 
 ## Credits
 
