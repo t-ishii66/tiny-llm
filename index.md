@@ -1,7 +1,12 @@
 ---
 layout: default
 title: tiny-LLM — Learn LLMs with a Minimal Transformer
+description: tiny-LLM is a minimal Transformer learning project. Understand Self-Attention, QKV, multi-head attention, training, and text generation with about 140 lines of executable code.
+keywords: tiny-LLM, Transformer, LLM, GPT, Self-Attention, Query Key Value, QKV, Multi-Head Attention, LayerNorm, Residual Connection, PyTorch, machine learning, deep learning, NLP, language model, generative AI, AI tutorial, トランスフォーマー, 機械学習, 生成AI
 ---
+<p>
+  <img src="top.png" alt="tiny-LLM top image" width="720" style="max-width: 100%; height: auto;">
+</p>
 
 # tiny-LLM
 
@@ -18,9 +23,7 @@ you can understand **nearly the same mechanisms as real LLMs** through hands-on 
 
 ---
 
-## Tutorial / チュートリアル
-
-### English
+## Tutorial
 
 Start here if you're new. Run the code yourself and
 build your understanding of the Transformer step by step.
@@ -32,7 +35,7 @@ build your understanding of the Transformer step by step.
 | [Step 3: Peeking Inside the Transformer](docs/en/tutorial/03_explore_model.md) | Visualize attention weights and embedding vectors | 15 min |
 | [Step 4: Experiments and Modifications](docs/en/tutorial/04_experiments.md) | Change parameters, modify the corpus, and experiment | 15 min |
 
-### 日本語
+### Japanese
 
 初めての方はこちらから。コードを実際に動かしながら、Transformer の仕組みを段階的に理解していきます。
 
@@ -45,9 +48,7 @@ build your understanding of the Transformer step by step.
 
 ---
 
-## Documentation / ドキュメント
-
-### English
+## Documentation
 
 Each chapter explains the code's mechanisms in detail, along with the mathematical background.
 
@@ -59,7 +60,7 @@ Each chapter explains the code's mechanisms in detail, along with the mathematic
 | [Supplement](docs/en/03a_gradient.md) | Gradient Math | Derivatives, partial derivatives, and the chain rule with concrete numbers |
 | [Chapter 4](docs/en/04_generation.md) | Text Generation | Next word prediction, Greedy Decoding, comparison with real LLMs |
 
-### 日本語
+### Japanese
 
 各章で、コードの仕組みを数学的背景とともに詳しく解説しています。
 
@@ -113,6 +114,12 @@ The only difference is scale. The mechanism is the same.
 
 - [tiny_llm.py](https://github.com/t-ishii66/tiny-llm/blob/main/tiny_llm.py) — Complete implementation (1 file, ~140 lines of code)
 - [GitHub Repository](https://github.com/t-ishii66/tiny-llm)
+
+---
+
+## Search Keywords
+
+tiny-LLM, Transformer, LLM, GPT, Self-Attention, QKV, Multi-Head Attention, PyTorch, machine learning, deep learning, NLP, language model, generative AI, AI tutorial, トランスフォーマー, 機械学習, 生成AI
 
 ---
 
