@@ -73,8 +73,8 @@ Let's look at each step in detail below.
 logits = model.forward(inputs)   # (28, 12, 10)
 ```
 
-This is exactly the processing explained in the previous chapter. For each of the
-28 samples × 12 positions, scores for 10 words are output.
+This is exactly the processing explained in the previous chapter. For each of
+28 samples (1 batch) × 12 positions, scores for 10 words are output.
 
 ---
 
@@ -100,7 +100,7 @@ logits shape: (28, 12, 10)
                ↑   ↑   ↑
                |   |   └─ Scores for each of the 10 words (next word predictions)
                |   └───── 12 predictions (predicting the "next word" for each input word)
-               └───────── 28 samples
+               └───────── 28 samples (1 batch in this example)
 ```
 
 As we saw in Chapter 1, inputs and targets are in a "shifted by one" relationship:
@@ -120,10 +120,10 @@ For example, the logits at position 3 ("on") are scores for 10 words predicting
 targets shape: (28, 12)
                 ↑   ↑
                 |   └─ Correct word number at each position (= the word that should come next)
-                └───── 28 samples
+                └───── 28 samples (1 batch in this example)
 ```
 
-In other words, there are 28 samples × 12 positions = **336 "next word" predictions**,
+In other words, there are 28 samples (1 batch) × 12 positions = **336 "next word" predictions**,
 each with **one correct answer**.
 
 ### Why Reshape with `view`
@@ -134,7 +134,7 @@ each with **one correct answer**.
 - Second argument: `(number of predictions,)` — 1D
 
 However, `logits` is 3D with shape `(28, 12, 10)`, and `targets` is 2D with shape `(28, 12)`.
-So we use `view` to flatten "28 samples × 12 positions" into a single row:
+So we use `view` to flatten "28 samples (1 batch) × 12 positions" into a single row:
 
 ```
 logits:  (28, 12, 10)  →  view(-1, 10)  →  (336, 10)
@@ -159,11 +159,16 @@ After view (2D):
   Prediction  0: [0.1, 2.5, 0.3, -0.1, ...]   ← Sample 0, position 0: 10-word scores
   Prediction  1: [0.3, -0.1, 1.2, 0.5, ...]   ← Sample 0, position 1: 10-word scores
   ...
-  Prediction 11: [...]                          ← Sample 0, position 11
-  Prediction 12: [...]                          ← Sample 1, position 0 (continues to next sample)
+  Prediction 11: [...]                          ← Sample 0, position 11: 10-word scores
+  Prediction 12: [...]                          ← Sample 1, position 0: 10-word scores
+  Prediction 13: [...]                          ← Sample 1, position 1: 10-word scores
   ...
-  Prediction 335: [...]                         ← Sample 27, position 11
+  Prediction 335: [...]                         ← Sample 27, position 11: 10-word scores
 ```
+
+The key point is that for one sample (12 words), prediction is not done once but **12 times**.
+In other words, the model predicts the "next word" at each position, and `view` simply
+rearranges all predictions (including those 12 per sample) into one flat list.
 
 In short, **we remove the distinction of "which sample, which position"
 and line up all 336 predictions in a single row, computing the loss all at once**.
@@ -353,8 +358,8 @@ List of parameters in this program:
 
 | Parameter | Shape | What It Learns |
 |-----------|-------|----------------|
-| `tok_emb` | (10, 64) | Meaning vector for each word |
-| `pos_emb` | (12, 64) | Information vector for each position |
+| `tok_emb` | (10, 64) | Token embedding for each word |
+| `pos_emb` | (12, 64) | Positional embedding for each position |
 | `Wq, Wk, Wv` | (64, 64) ×3 ×2 layers | How to query in Attention |
 | `Wo` | (64, 64) ×2 layers | How to integrate Attention output |
 | `W1, b1` | (64,128), (128,) ×2 layers | FFN transformation (first half) |

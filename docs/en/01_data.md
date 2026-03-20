@@ -156,6 +156,27 @@ def make_training_data(text, vocab):
     return torch.tensor(inputs), torch.tensor(targets)
 ```
 
+### Why slice by `SEQ_LEN`? (= Context Length)
+
+Transformers have an upper limit on how many tokens they can see in one forward pass.
+That limit is the **context length** (or context window), and in this project,
+`SEQ_LEN = 12` plays that role.
+
+So during training, the corpus is sliced into windows of length 12 before being fed to the model.
+The same idea appears in generation: `generate()` always uses only the most recent `SEQ_LEN` tokens as context.
+This means if the token sequence grows longer than `SEQ_LEN`, older tokens fall out of the active context.
+
+### Relationship to Padding
+
+In large-scale pretraining, text is usually not split strictly by sentence-ending punctuation.
+Instead, token streams are concatenated and then cut into fixed-length chunks (`SEQ_LEN`).
+With this setup, sequence lengths are already aligned, so padding is typically unnecessary.
+
+By contrast, in settings like SFT where variable-length samples are packed into the same batch,
+shorter sequences may be filled with `<pad>`.
+In this code, training samples are created at a fixed length (`SEQ_LEN`) from the start,
+so padding is effectively not used during training (`<pad>` is defined only as a reserved token).
+
 >
 > **Python Tips: Slicing `tokens[i : i + SEQ_LEN]`**
 >
@@ -253,6 +274,16 @@ The key point is that **all positions simultaneously predict the "next word."**
 inputs:  torch.Tensor, shape = (28, 12)    ← 28 samples × 12 tokens
 targets: torch.Tensor, shape = (28, 12)    ← Corresponding targets
 ```
+
+> **About Batches (simplified here)**
+>
+> This `(28, 12)` is processed as **28 samples grouped into one chunk (1 batch)**.
+> In other words, this project keeps things simple by using **a batch count of 1**.
+>
+> In real LLM training, corpora are much larger, so data is split into multiple batches,
+> and we repeat **forward → loss → backward → update** for each batch.
+> The core learning objective, however, is the same inside every batch:
+> predict the next word.
 
 ---
 
