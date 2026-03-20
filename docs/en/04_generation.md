@@ -236,7 +236,7 @@ based on learned patterns — that is the power of large language models.
        ↓
    Transformer
        ↓
-   Predict "."
+   Predict "mat"
        ↓
    ...repeat
 ```
