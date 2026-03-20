@@ -99,7 +99,7 @@ To extract attention scores, we manually compute up to the intermediate step:
 >>> print(attn[0].detach())
 ```
 
-A 6x6 attention matrix is displayed. Each row shows "which positions that position is attending to":
+A 6x6 Attention weight matrix (after softmax) is displayed. Each row shows "which positions that position is attending to":
 
 ```
 Row 0 (the):  [1.00, 0.00, 0.00, 0.00, 0.00, 0.00]  ← Can only see itself
@@ -178,7 +178,7 @@ The word with the highest score is selected by `argmax`:
 ## 3.6 Key Takeaways So Far
 
 - **Embedding**: Through training, words used in similar contexts get similar vectors
-- **Attention matrix**: Becomes triangular due to the causal mask. Each head shows different patterns
+- **Attention weight matrix**: Becomes triangular due to the causal mask. Each head shows different patterns
 - **Generation**: Scores are produced for all words, and the word with the highest score becomes the next prediction
 - Everything can be inspected as **numerical tensors** — it's not a black box
 

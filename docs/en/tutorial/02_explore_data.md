@@ -61,7 +61,7 @@ torch.Size([28, 12])
 torch.Size([28, 12])
 ```
 
-28 samples, each with a length of 12 tokens.
+28 samples (1 batch), each with a length of 12 tokens.
 
 ---
 

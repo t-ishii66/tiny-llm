@@ -146,15 +146,33 @@ This is called **Greedy Decoding**.
 
 ```
 Scores: [0.1, 0.3, -0.2, 0.1, 0.8, 2.1, -0.3, -0.1, 0.4, 0.0]
-                                          ↑
-                                     Always picks this one
 ```
+
+In this example, it always selects the maximum value, **2.1**.
 
 It's simple, but because it always picks only "the most probable word,"
 it tends to loop the same patterns.
 
 > **Real LLMs** use techniques like sampling from the probability distribution (temperature),
 > or choosing from the top k candidates (top-k) to produce more diverse outputs.
+
+### How Temperature Works
+
+Temperature is a coefficient that controls how "sharp" or "flat" logits become before sampling.
+
+$$p_i = \text{softmax}\left(\frac{\text{logit}_i}{T}\right)$$
+
+These $p_i$ values are used as the **next-token probabilities**, and one token is selected from
+that distribution to decide the next word (in temperature sampling).
+
+- `T < 1.0`: distribution becomes sharper (focuses on high-score words) → more deterministic output
+- `T = 1.0`: uses the model's original distribution as-is
+- `T > 1.0`: distribution becomes flatter (more probability mass on lower-score words) → more diverse output
+
+Intuitively, lowering `T` makes generation more "conservative," while raising `T` makes it more "adventurous."
+As `T` gets very small, behavior approaches `argmax`; as `T` gets very large, behavior approaches near-random choice.
+
+Note: the `generate()` implementation in this file remains Greedy (`argmax`); temperature sampling is not implemented here.
 
 ---
 

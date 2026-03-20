@@ -88,6 +88,7 @@ x = self.tok_emb[token_ids] + self.pos_emb[:T]
 **Step 1: Token Embedding**
 
 `tok_emb` is a table of shape `(10, 64)`, where each row is one word's vector.
+This vector retrieved from a word ID is called a **token embedding**.
 
 ```
 tok_emb = [
@@ -115,6 +116,7 @@ Resulting shape: `(28, 12)` → `(28, 12, 64)`
 Even for the same word "the," its role differs at the beginning versus the middle of a sentence.
 `pos_emb` is a table that holds a vector for each position:
 "position 0 has this vector, position 1 has this vector..."
+This vector associated with each position is called a **positional embedding**.
 
 ```
 pos_emb = [
@@ -131,13 +133,24 @@ These are simply added together:
 ```
 x = tok_emb[token_ids] + pos_emb[:T]
 
-Position 0: "the" vector + position 0 vector = vector for "the at position 0"
-Position 1: "cat" vector + position 1 vector = vector for "cat at position 1"
+Position 0: "the" token embedding + position 0 positional embedding = input embedding for "the at position 0"
+Position 1: "cat" token embedding + position 1 positional embedding = input embedding for "cat at position 1"
 ...
 ```
 
+The resulting `x` is called the **input embeddings**.
+This `x` is the initial representation passed to the next Self-Attention block.
+
 > **Key point:** Both `tok_emb` and `pos_emb` are **learnable parameters**.
 > They start as random values but are updated to meaningful values through training.
+>
+> **How many are there? (important):** In this project, there is
+> **only one `tok_emb` and one `pos_emb` for the entire model**, shared across all Transformer blocks.
+> So even with `N_LAYERS = 2`, you do not get two separate embedding sets
+> (what increases per layer is Attention/FFN weights).
+>
+> Note that in different architectures (for example, separate encoder/decoder stacks),
+> embeddings may be separate by design.
 
 ---
 
@@ -212,13 +225,17 @@ The higher the match (dot product) between Q and K, the more of that V gets inco
 We said "Q, K, V are separate things," but
 the input is **just a single x**. This is the first point of confusion.
 
-**What is x?** It's the embedding vector for each word, created in the previous step.
+**What is x?** It's the input embedding vector for each word, created in the previous step.
 
 ```
 "the" → x₀ = [0.05, 0.01, -0.02, ...]   ← 64-dimensional vector
 "cat" → x₁ = [-0.01, 0.04, 0.03, ...]   ← 64-dimensional vector
 "sat" → x₂ = [0.02, -0.03, 0.01, ...]   ← 64-dimensional vector
 ```
+
+An important point here: `Wq` / `Wk` / `Wv` are not fixed rules, but **learned parameters**.
+They start from random values, and during training they are updated to reduce loss,
+gradually shaping what kind of "query expression" and "key expression" are useful.
 
 From this **same x**, we multiply by **three different weight matrices** to create Q, K, V:
 
@@ -267,18 +284,18 @@ Once Q and K are ready, we measure "degree of match" with dot products:
 
 $$\text{score}(i, j) = \frac{Q_i \cdot K_j^T}{\sqrt{d_k}}$$
 
-A **single element** of the attn matrix comes from the dot product of vectors $Q_i$ and $K_j$
+A **single element** of the **score matrix (`scores`)** comes from the dot product of vectors $Q_i$ and $K_j$
 (after Multi-Head splitting, these are **16-dimensional**; before splitting, 64-dimensional).
 $Q_i$ is the Query of each word, so there are **12** ($Q_0$ through $Q_{11}$),
 and likewise $K_j$ has **12** ($K_0$ through $K_{11}$).
-Computing dot products for all combinations (12 × 12 = 144) yields a **12×12 attn matrix**:
+Computing dot products for all combinations (12 × 12 = 144) yields a **12×12 score matrix (`scores`)**:
 
 ```
-Q₂ = [0.12, -0.08, 0.05, 0.21, ...]   ← "sat" Query (16 dims × 4 heads)
-K₁ = [0.09,  0.15, 0.03, 0.18, ...]   ← "cat" Key   (16 dims × 4 heads)
+Q₂ = [0.12, -0.08, 0.05, 0.21, ...]   ← "sat" Query vector
+K₁ = [0.09,  0.15, 0.03, 0.18, ...]   ← "cat" Key vector
 
-Dot product for 1 head = 0.12×0.09 + (-0.08)×0.15 + 0.05×0.03 + 0.21×0.18 + ... (sum of 16 terms)
-                       = 2.1 (a single scalar)
+Dot product = 0.12×0.09 + (-0.08)×0.15 + 0.05×0.03 + 0.21×0.18 + ... (sum over dimensions)
+            = 2.1 (a single scalar)
 ```
 
 Performing this computation for all (i, j) combinations yields a 12×12 score matrix.
@@ -292,7 +309,7 @@ Dot product of "sat"'s Q₂ with each word's K:
   Q₂ · K₂("sat") = 0.8   ← Moderate attention to itself
 ```
 
-Dividing by $\sqrt{d_k}$ (= $\sqrt{16}$ = 4) is to prevent the dot product values from growing
+Dividing by $\sqrt{d_k}$ is to prevent the dot product values from growing
 too large when the dimension is high, which would cause softmax to produce extreme distributions
 (nearly all 0s and 1s). This is a statistically derivable normalization.
 
@@ -321,7 +338,8 @@ Expressed mathematically:
 
 $$\text{attn}(i, j) = \text{softmax}_j(\text{score}(i, j))$$
 
-The entire attn(i, j) is a matrix of size **sequence length × sequence length** (12 × 12).
+Stacking these `attn(i, j)` values gives the **Attention weight matrix (`attn_weights`)**,
+whose size is **sequence length × sequence length** (12 × 12).
 That is, it's the number of words in the current sentence × the number of words:
 
 ```
@@ -342,6 +360,8 @@ i=11"the" [ 0.02   0.03   0.05   0.04 ...   0.12 ]
 ### Output — Weighted Sum of Values
 
 $$\text{out}_i = \sum_j \text{attn}(i, j) \cdot V_j$$
+
+This $\text{out}_i$ is called the **context vector** for that position.
 
 Finally, we blend each word's Value using the attention weights:
 
@@ -418,6 +438,10 @@ We multiply the weight matrices with each word's 64-dimensional vector to obtain
 >                            #    Axes 1 and 2 swapped
 > ```
 > This brings the "head" axis to the front, so each head can compute attention independently.
+
+What we split here is the last dimension of `Q`, `K`, and `V` created in Step 1 (64 dims).
+In other words, one 64-dimensional representation is divided into smaller pieces:
+`4 heads × 16 dimensions`.
 
 We split the 64 dimensions into 4 heads × 16 dimensions.
 
@@ -572,6 +596,8 @@ After softmax:
 ```python
     out = attn_weights @ V   # (28, 4, 12, 12) @ (28, 4, 12, 16) → (28, 4, 12, 16)
 ```
+
+Here, we obtain the **context vector `out`** for each position.
 
 > **Note on shapes: Ignore the batch size of 28**
 >
@@ -893,7 +919,7 @@ Comparing these logits with the correct answers to compute the loss is the subje
 ```
 token_ids (28, 12)            ← Integers (word numbers)
     ↓ Embedding
-x (28, 12, 64)               ← Each word becomes a 64-dim vector
+x (28, 12, 64)               ← Each word becomes a 64-dim input embedding
     ↓ Self-Attention
 x (28, 12, 64)               ← Transformed to context-aware vectors
     ↓ FFN
@@ -906,7 +932,7 @@ logits (28, 12, 10)           ← Scores for 10 words at each position
 
 | Component | Shape Change | Role |
 |-----------|-------------|------|
-| Token Embedding | (28,12) → (28,12,64) | Turn words into numerical vectors |
+| Token Embedding | (28,12) → (28,12,64) | Convert word IDs into token embeddings |
 | Positional Emb. | Addition | Add positional information |
 | Self-Attention | (28,12,64) → (28,12,64) | Capture relationships between words |
 | Layer Norm | Shape unchanged | Stabilize values |
