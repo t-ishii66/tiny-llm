@@ -28,14 +28,19 @@ cd tiny-llm
 
 ```
 tiny-llm/
-├── tiny_llm.py          ← 全実装（実コード約140行）
-├── docs/                ← ドキュメント
-│   ├── 01_data.md
-│   ├── 02_transformer.md
-│   ├── 03_training.md
-│   ├── 03a_gradient.md
-│   ├── 04_generation.md
-│   └── tutorial/        ← このチュートリアル
+├── tiny_llm.py              ← 全実装（実コード約140行）
+├── docs/
+│   ├── ja/                  ← 日本語ドキュメント
+│   │   ├── 01_data.md
+│   │   ├── 02_transformer.md
+│   │   ├── 03_training.md
+│   │   ├── 03a_gradient.md
+│   │   ├── 04_generation.md
+│   │   └── tutorial/        ← このチュートリアル
+│   └── en/                  ← English documentation
+│       ├── 01_data.md
+│       ├── ...
+│       └── tutorial/
 └── README.md
 ```
 

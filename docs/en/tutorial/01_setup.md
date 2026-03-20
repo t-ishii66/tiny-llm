@@ -28,14 +28,19 @@ There's just one file:
 
 ```
 tiny-llm/
-├── tiny_llm.py          ← Full implementation (~140 lines of executable code)
-├── docs/                ← Documentation
-│   ├── 01_data.md
-│   ├── 02_transformer.md
-│   ├── 03_training.md
-│   ├── 03a_gradient.md
-│   ├── 04_generation.md
-│   └── tutorial/        ← This tutorial
+├── tiny_llm.py              ← Full implementation (~140 lines of executable code)
+├── docs/
+│   ├── ja/                  ← 日本語ドキュメント (Japanese)
+│   │   ├── 01_data.md
+│   │   ├── 02_transformer.md
+│   │   ├── 03_training.md
+│   │   ├── 03a_gradient.md
+│   │   ├── 04_generation.md
+│   │   └── tutorial/
+│   └── en/                  ← English documentation
+│       ├── 01_data.md
+│       ├── ...
+│       └── tutorial/        ← This tutorial
 └── README.md
 ```
 

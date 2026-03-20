@@ -236,7 +236,7 @@ output: the dog saw the cat . the cat sat on the log .
        ↓
    Transformer
        ↓
-   "." を予測
+   "mat" を予測
        ↓
    ...繰り返し
 ```

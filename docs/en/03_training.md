@@ -195,9 +195,9 @@ $$p_i = \frac{e^{\text{logit}_i}}{\sum_j e^{\text{logit}_j}}$$
 
 ```
 logits:  [0.1,  2.5,  0.3, -0.1,  0.5, -0.2,  0.4, -0.1,  0.6,  0.0]
-softmax: [0.04, 0.47, 0.05, 0.03, 0.06, 0.03, 0.06, 0.03, 0.07, 0.04]
+softmax: [0.05, 0.52, 0.06, 0.04, 0.07, 0.04, 0.06, 0.04, 0.08, 0.04]
                  ↑
-              47% probability for the correct "the" → still low
+              52% probability for the correct "the" → still low
 ```
 
 **Step 2: Negative log of the correct answer's probability**
@@ -205,7 +205,7 @@ softmax: [0.04, 0.47, 0.05, 0.03, 0.06, 0.03, 0.06, 0.03, 0.07, 0.04]
 $$\text{loss} = -\log(p_{\text{correct}})$$
 
 ```
-loss = -log(0.47) = 0.76
+loss = -log(0.52) = 0.65
 ```
 
 - Correct answer's probability close to 1.0 → loss ≈ 0 (good prediction)
