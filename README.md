@@ -75,7 +75,7 @@ python tiny_llm.py
 - Project Planning: t-ishii66
 - Architecture Design: t-ishii66
 - Programming: Claude Opus 4.6, t-ishii66
-- Document: Claude Opus 4.6, t-ishii66
+- Document: Claude Opus 4.6, GPT 5.3 Codex, t-ishii66
 - Review: t-ishii66
 - English translation: Claude Opus 4.6, GPT 5.3 Codex
 
