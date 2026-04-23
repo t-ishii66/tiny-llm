@@ -1,4 +1,4 @@
-# tiny-LLM
+# tiny-LLM from scratch
 
 A single-file Transformer implementation designed to teach the core algorithms behind large language models — self-attention, Query/Key/Value, multi-head attention, and next-token prediction — in the most concise Python code possible.
 

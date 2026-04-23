@@ -1,14 +1,15 @@
 ---
 layout: default
-title: tiny-LLM — Learn LLMs with a Minimal Transformer
-description: tiny-LLM is a minimal Transformer learning project. Understand Self-Attention, QKV, multi-head attention, training, and text generation with about 140 lines of executable code.
+title: "tiny-LLM from scratch — Learn LLMs with a Minimal Transformer"
+description: "tiny-LLM is a minimal Transformer learning project. Understand Self-Attention, QKV, multi-head attention, training, and text generation with about 140 lines of executable code."
 keywords: tiny-LLM, Transformer, LLM, GPT, Self-Attention, Query Key Value, QKV, Multi-Head Attention, LayerNorm, Residual Connection, PyTorch, machine learning, deep learning, NLP, language model, generative AI, AI tutorial, トランスフォーマー, 機械学習, 生成AI
+canonical_url: "https://t-ishii66.github.io/tiny-llm/"
 ---
 <p>
   <img src="top.png" alt="tiny-LLM top image" width="720" style="max-width: 100%; height: auto;">
 </p>
 
-# tiny-LLM
+# tiny-LLM from scratch
 
 **Learn the entire Transformer architecture in just 1 file and ~140 lines of code**
 
@@ -35,17 +36,6 @@ build your understanding of the Transformer step by step.
 | [Step 3: Peeking Inside the Transformer](docs/en/tutorial/03_explore_model.md) | Visualize attention weights and embedding vectors | 15 min |
 | [Step 4: Experiments and Modifications](docs/en/tutorial/04_experiments.md) | Change parameters, modify the corpus, and experiment | 15 min |
 
-### Japanese
-
-初めての方はこちらから。コードを実際に動かしながら、Transformer の仕組みを段階的に理解していきます。
-
-| チュートリアル | 内容 | 所要時間 |
-|---|---|---|
-| [Step 1: セットアップと実行](docs/ja/tutorial/01_setup.md) | 環境構築、コードの実行、出力の確認 | 5分 |
-| [Step 2: データを観察する](docs/ja/tutorial/02_explore_data.md) | トークン化・訓練データの中身を自分の目で確認 | 10分 |
-| [Step 3: Transformer の中を覗く](docs/ja/tutorial/03_explore_model.md) | Attention の重み、埋め込みベクトルを可視化 | 15分 |
-| [Step 4: 改造してみる](docs/ja/tutorial/04_experiments.md) | パラメータを変えたり、コーパスを変えて実験 | 15分 |
-
 ---
 
 ## Documentation
@@ -59,18 +49,6 @@ Each chapter explains the code's mechanisms in detail, along with the mathematic
 | [Chapter 3](docs/en/03_training.md) | Training | Cross-Entropy Loss, Backpropagation, Parameter Updates |
 | [Supplement](docs/en/03a_gradient.md) | Gradient Math | Derivatives, partial derivatives, and the chain rule with concrete numbers |
 | [Chapter 4](docs/en/04_generation.md) | Text Generation | Next word prediction, Greedy Decoding, comparison with real LLMs |
-
-### Japanese
-
-各章で、コードの仕組みを数学的背景とともに詳しく解説しています。
-
-| 章 | タイトル | 内容 |
-|---|---|---|
-| [第1章](docs/ja/01_data.md) | データの準備 | 語彙構築、トークン化、訓練データの作り方 |
-| [第2章](docs/ja/02_transformer.md) | Transformer | Embedding、Self-Attention、FFN、Forward Pass の全て |
-| [第3章](docs/ja/03_training.md) | 訓練 | Cross-Entropy Loss、誤差逆伝播、パラメータ更新 |
-| [補足](docs/ja/03a_gradient.md) | 勾配の数学 | 微分・偏微分・連鎖律を具体的な数値で解説 |
-| [第4章](docs/ja/04_generation.md) | テキスト生成 | 次の単語の予測、Greedy Decoding、本物の LLM との比較 |
 
 ---
 
@@ -114,6 +92,33 @@ The only difference is scale. The mechanism is the same.
 
 - [tiny_llm.py](https://github.com/t-ishii66/tiny-llm/blob/main/tiny_llm.py) — Complete implementation (1 file, ~140 lines of code)
 - [GitHub Repository](https://github.com/t-ishii66/tiny-llm)
+
+---
+
+## チュートリアル（日本語）
+
+初めての方はこちらから。コードを実際に動かしながら、Transformer の仕組みを段階的に理解していきます。
+
+| チュートリアル | 内容 | 所要時間 |
+|---|---|---|
+| [Step 1: セットアップと実行](docs/ja/tutorial/01_setup.md) | 環境構築、コードの実行、出力の確認 | 5分 |
+| [Step 2: データを観察する](docs/ja/tutorial/02_explore_data.md) | トークン化・訓練データの中身を自分の目で確認 | 10分 |
+| [Step 3: Transformer の中を覗く](docs/ja/tutorial/03_explore_model.md) | Attention の重み、埋め込みベクトルを可視化 | 15分 |
+| [Step 4: 改造してみる](docs/ja/tutorial/04_experiments.md) | パラメータを変えたり、コーパスを変えて実験 | 15分 |
+
+---
+
+## ドキュメント（日本語）
+
+各章で、コードの仕組みを数学的背景とともに詳しく解説しています。
+
+| 章 | タイトル | 内容 |
+|---|---|---|
+| [第1章](docs/ja/01_data.md) | データの準備 | 語彙構築、トークン化、訓練データの作り方 |
+| [第2章](docs/ja/02_transformer.md) | Transformer | Embedding、Self-Attention、FFN、Forward Pass の全て |
+| [第3章](docs/ja/03_training.md) | 訓練 | Cross-Entropy Loss、誤差逆伝播、パラメータ更新 |
+| [補足](docs/ja/03a_gradient.md) | 勾配の数学 | 微分・偏微分・連鎖律を具体的な数値で解説 |
+| [第4章](docs/ja/04_generation.md) | テキスト生成 | 次の単語の予測、Greedy Decoding、本物の LLM との比較 |
 
 ---
 
