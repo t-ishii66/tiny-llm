@@ -4,3 +4,7 @@ url: "https://t-ishii66.github.io"
 baseurl: "/tiny-llm"
 
 theme: jekyll-theme-cayman
+
+exclude:
+  - CLAUDE.md
+  - PROBLEMS.md
