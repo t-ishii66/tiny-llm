@@ -6,14 +6,28 @@ Let's start by running the code.
 
 ## 1.1 Requirements
 
-- Python 3.8 or higher
-- PyTorch (CPU version is sufficient)
+The only thing you need is **[uv](https://docs.astral.sh/uv/)** — Astral's modern Python package manager.
+uv automatically handles Python itself and PyTorch as needed.
+No GPU required; tiny-LLM completes training in seconds.
+
+Install uv:
 
 ```bash
-pip install torch
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows (PowerShell)
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Homebrew (macOS)
+brew install uv
 ```
 
-No GPU required. tiny-LLM completes training in seconds.
+After installing, verify with `uv --version`.
+
+> **Why uv**: faster than pip + venv, and it handles Python version management,
+> virtual environments, and dependency installation through a single tool.
+> No manual `venv` creation or `source venv/bin/activate` needed.
 
 ---
 
@@ -49,8 +63,27 @@ tiny-llm/
 ## 1.3 Run It
 
 ```bash
-python tiny_llm.py
+uv run --with torch tiny_llm.py
 ```
+
+`--with torch` tells uv to add PyTorch ad-hoc for this run.
+The first run downloads PyTorch (a few seconds to minutes depending on your connection),
+but subsequent runs start instantly from the cache.
+You don't even need Python pre-installed — uv will fetch a suitable version automatically.
+
+> **Where packages live**
+>
+> Anything installed via `--with` lands in uv's **own cache directory**:
+>
+> - macOS: `~/Library/Caches/uv/`
+> - Linux: `~/.cache/uv/`
+> - Windows: `%LocalAppData%\uv\cache\`
+>
+> Nothing is written to your project directory (no `./.venv/`), your system Python, or Homebrew Python.
+> Check the location with `uv cache dir`; trim old entries with `uv cache prune`;
+> wipe everything with `uv cache clean` when you're done with the project.
+
+> Chapter 5's `tiny_llm_instruct.py` runs the same way: `uv run --with torch tiny_llm_instruct.py`
 
 You should see output like the following (exact numbers will vary slightly between runs):
 

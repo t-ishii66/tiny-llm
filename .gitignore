@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Project-local notes
+PROBLEMS.md
+*PROBLEMS*.md
+
+# Jekyll build artifacts
+_site/
+.jekyll-cache/
+.jekyll-metadata
+
+# Python virtual environments
+venv/
+.venv/

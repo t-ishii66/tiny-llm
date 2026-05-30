@@ -6,14 +6,28 @@
 
 ## 1.1 必要なもの
 
-- Python 3.8 以上
-- PyTorch（CPU 版で十分）
+このプロジェクトを動かすのに必要なのは **[uv](https://docs.astral.sh/uv/)** だけです。
+Python 本体も PyTorch も、uv が必要に応じて自動で揃えてくれます。
+GPU は不要、tiny-LLM は数秒で訓練が完了します。
+
+uv のインストール:
 
 ```bash
-pip install torch
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows (PowerShell)
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Homebrew (macOS)
+brew install uv
 ```
 
-GPU は不要です。tiny-LLM は数秒で訓練が完了します。
+インストール後、`uv --version` でバージョンが表示されれば OK です。
+
+> **uv を使う理由**: pip + venv より高速で、Python のバージョン管理から
+> 依存パッケージのインストールまで 1 ツールで完結します。
+> 仮想環境を手動で作る必要も、`source venv/bin/activate` も要りません。
 
 ---
 
@@ -24,11 +38,12 @@ git clone https://github.com/t-ishii66/tiny-llm.git
 cd tiny-llm
 ```
 
-ファイルは1つだけです：
+主な実装ファイルはこの2つです：
 
 ```
 tiny-llm/
 ├── tiny_llm.py              ← 全実装（実コード約140行）
+├── tiny_llm_instruct.py     ← 第5章で使う instruction tuning 用
 ├── docs/
 │   ├── ja/                  ← 日本語ドキュメント
 │   │   ├── 01_data.md
@@ -36,11 +51,10 @@ tiny-llm/
 │   │   ├── 03_training.md
 │   │   ├── 03a_gradient.md
 │   │   ├── 04_generation.md
+│   │   ├── 05_instruction_tuning.md
 │   │   └── tutorial/        ← このチュートリアル
 │   └── en/                  ← English documentation
-│       ├── 01_data.md
-│       ├── ...
-│       └── tutorial/
+│       └── ...
 └── README.md
 ```
 
@@ -49,8 +63,14 @@ tiny-llm/
 ## 1.3 実行する
 
 ```bash
-python tiny_llm.py
+uv run --with torch tiny_llm.py
 ```
+
+`--with torch` は「PyTorch を一時的に追加して、このスクリプトを走らせて」という指定です。
+初回は PyTorch のダウンロードが入るので少し待ちますが、2 回目以降はキャッシュから瞬時に起動します。
+Python が入っていない環境でも、uv が必要なバージョンを自動で取ってきます。
+
+> 第5章の `tiny_llm_instruct.py` も同じ要領で実行できます: `uv run --with torch tiny_llm_instruct.py`
 
 以下のような出力が表示されます（数値は実行のたびに多少変わります）：
 
@@ -120,6 +140,22 @@ output: the cat sat on the mat . the dog sat on the log ...
 4. **生成**: 学習済みモデルでテキストを生成
 
 次のステップでは、この各段階の中身を自分の目で確認していきます。
+
+---
+
+## (補足) uv が PyTorch をどこに入れるか
+
+気になる人だけ読めば OK。`uv run --with torch ...` で入れた PyTorch は、すべて **uv 専用のキャッシュディレクトリ** に置かれます。プロジェクトディレクトリ (`./.venv/` 等) にも、システム Python にも、Homebrew Python にも何も書き込みません。
+
+| OS | キャッシュ場所 |
+|---|---|
+| macOS | `~/Library/Caches/uv/` |
+| Linux | `~/.cache/uv/` |
+| Windows | `%LocalAppData%\uv\cache\` |
+
+- 場所の確認: `uv cache dir`
+- 容量を抑える: `uv cache prune` (古いものだけ削除)
+- 完全リセット: `uv cache clean`
 
 ---
 

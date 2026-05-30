@@ -32,7 +32,7 @@ corpus = (
 Run it and see if "bird" is learned correctly:
 
 ```bash
-python tiny_llm.py
+uv run --with torch tiny_llm.py
 ```
 
 > **Note**: Adding new words changes the vocabulary size (10 → 11).
@@ -177,4 +177,6 @@ tiny-LLM is a small toy, but it operates with
 **exactly the same mechanism** as real LLMs like GPT.
 The understanding gained here directly carries over to studying production-scale LLMs.
 
-For a deeper understanding of the mechanisms, proceed to the [documentation](../01_data.md).
+---
+
+Next: [Step 5: Try Instruction Tuning](05_instruction.md)

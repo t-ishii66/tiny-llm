@@ -1,7 +1,11 @@
 # Step 4: 改造してみる
 
-ここまでで Transformer の仕組みが見えてきました。
-最後に、コードを改造して実験してみましょう。
+ここまでで Transformer の仕組みが見えてきました。コードを改造して実験してみましょう。
+
+> **ここからは作業スタイルが変わります。**
+> Step 2〜3 までは `uv run --with torch python -i tiny_llm.py` で対話モードに入り、訓練済みモデルをその場で観察する流れでした。
+> Step 4 では **エディタで `tiny_llm.py` を直接書き換え → 保存 → `uv run --with torch tiny_llm.py` で再訓練 → 出力を比較** というサイクルを回します (対話モードは使いません)。
+> 各節を試したあとは、変更を元に戻してから次の節に進むと、1 要素ずつの効果が分かりやすくなります。
 
 ---
 
@@ -32,7 +36,7 @@ corpus = (
 実行して、"bird" が正しく学習されるか確認してみましょう：
 
 ```bash
-python tiny_llm.py
+uv run --with torch tiny_llm.py
 ```
 
 > **注意**: 新しい単語を追加すると語彙数が変わります（10 → 11）。
@@ -43,47 +47,32 @@ python tiny_llm.py
 ## 4.2 ハイパーパラメータを変えてみる
 
 `tiny_llm.py` 冒頭のハイパーパラメータを変えて、訓練結果がどう変わるか観察します。
+**まず「予想」を書いてから実行 → 実測値と並べてみる** と学びの密度が上がります。
 
-### 実験 1: Attention ヘッド数を変える
+| 設定 | 200 epoch 時の最終 loss の予想 | 実測 |
+|---|---|---|
+| デフォルト (N_HEADS=4, N_LAYERS=2, D_MODEL=64, LR=0.001) | 0.1 前後 | ? |
+| N_HEADS=1 | やや高め (0.2〜0.5)? | ? |
+| N_LAYERS=1 | デフォルトと近い? | ? |
+| D_MODEL=16, D_FF=32 | 表現力不足で下げ止まる? | ? |
+| LR=0.01 | 速いが不安定? | ? |
+| LR=0.0001 | 遅すぎて下がりきらない? | ? |
+| EPOCHS=50 | 学習不足、高めで止まる? | ? |
 
-```python
-N_HEADS = 1    # 1ヘッドだけ（マルチヘッドなし）
-```
-
-1ヘッドでも学習できますが、Attention パターンが1種類に制限されます。
-
-### 実験 2: 層数を変える
-
-```python
-N_LAYERS = 1   # 1層だけ
-```
-
-1層でもこの小さなコーパスなら学習できるでしょう。
-ただし、より複雑なパターンには深い層が必要です。
-
-### 実験 3: 埋め込み次元を変える
+設定の変更箇所はそれぞれ：
 
 ```python
-D_MODEL = 16   # 64 → 16 に縮小
-D_FF = 32      # 通常 D_MODEL の2〜4倍
+N_HEADS = 1     # 1ヘッドだけ（マルチヘッドなし）
+N_LAYERS = 1    # 1層だけ
+D_MODEL = 16    # 64 → 16 に縮小、D_FF = 32 もセット
+LR = 0.01       # 10倍に
+LR = 0.0001     # 1/10に
+EPOCHS = 50     # 少なすぎ
+EPOCHS = 1000   # 多すぎ（過学習）
 ```
 
-次元が小さいと、単語の意味を十分に表現できなくなるかもしれません。
-loss の収束が遅くなるか、最終的な loss が高くなるか観察してください。
-
-### 実験 4: 学習率を変える
-
-```python
-LR = 0.01     # 10倍に（学習が速いが不安定かも）
-LR = 0.0001   # 1/10に（安定だが学習が遅い）
-```
-
-### 実験 5: エポック数を変える
-
-```python
-EPOCHS = 50    # 少なすぎると学習不足
-EPOCHS = 1000  # 多すぎても、この小さなコーパスでは過学習するだけ
-```
+> **コツ**: 1 つだけ変えて 1 回回す → 値を記録 → デフォルトに戻して次へ、を繰り返すと
+> 1 要素の効果が見えます。複数を同時に変えると何が効いたか分かりません。
 
 ---
 
@@ -93,9 +82,6 @@ EPOCHS = 1000  # 多すぎても、この小さなコーパスでは過学習す
 
 `generate()` 関数では `argmax`（常に最高スコア）で次の単語を選んでいます。
 これを確率的なサンプリングに変えてみましょう：
-
-> **注意**: ここでも prompt は学習コーパス内の単語で構成してください。
-> 語彙外単語を含む prompt は現実装では例外になります。
 
 ```python
 def generate(model, prompt, vocab, id2word, max_tokens=20, temperature=1.0):
@@ -115,12 +101,16 @@ def generate(model, prompt, vocab, id2word, max_tokens=20, temperature=1.0):
     return " ".join(id2word[t] for t in tokens)
 ```
 
+> **`torch.multinomial(probs, 1)` とは**: 確率分布 `probs` に従って 1 個サンプリングする関数です。
+> たとえば `probs = [0.7, 0.2, 0.1]` なら 70%/20%/10% の確率で 0/1/2 のいずれかを返します。
+> `argmax` だと毎回 0 しか出ませんが、`multinomial` を使うとそのときの分布に応じて他の候補も選ばれ得るので、生成にゆらぎが生まれます。
+
 - `temperature = 0.1`: ほぼ argmax と同じ（確信度の高い単語を選ぶ）
 - `temperature = 1.0`: モデルの確率分布に忠実にサンプリング
 - `temperature = 2.0`: よりランダムに（意外な単語も出やすい）
 
 > このコーパスは非常に小さいので差が出にくいですが、
-> 本物の LLM では temperature が生成テキストの多様性を大きく左右します。
+> 実際の LLM では temperature が生成テキストの多様性を大きく左右します。
 
 ---
 
@@ -132,21 +122,38 @@ def generate(model, prompt, vocab, id2word, max_tokens=20, temperature=1.0):
 logits = x @ self.tok_emb.T    # Weight Tying: Embedding を再利用
 ```
 
-これを独立の重み行列に変えてみましょう。`__init__` に追加：
+これを独立の重み行列に変えてみましょう。`TinyTransformer.__init__` の `--- 埋め込み ---` 直後あたりに `out_proj` を新設：
 
 ```python
-self.out_proj = param(D_MODEL, vocab_size)   # (64, 10)
+# --- 埋め込み ---
+self.tok_emb = param(vocab_size, D_MODEL)
+self.pos_emb = param(SEQ_LEN, D_MODEL)
+self.out_proj = param(D_MODEL, vocab_size)   # ← 追加 (64, 10)
 ```
 
-Forward の最後を変更：
+`forward` の最後を `out_proj` を使う形に変更：
 
 ```python
-logits = x @ self.out_proj     # 独立の出力射影
+logits = x @ self.out_proj     # ← Weight Tying を外して独立の出力射影に
 ```
 
-`parameters()` にも `self.out_proj` を追加するのを忘れずに。
+最後に `parameters()` で `out_proj` も学習対象に含めます：
 
-パラメータ数がどれだけ増えるか、loss の収束に差があるか、比較してみてください。
+```python
+def parameters(self):
+    params = [self.tok_emb, self.pos_emb, self.out_proj,   # ← out_proj を追加
+              self.ln_f_g, self.ln_f_b]
+    for layer in self.layers:
+        params.extend(layer.values())
+    return params
+```
+
+実行してみて、
+
+- パラメータ数 (3.1 で見た `sum(p.numel() for p in model.parameters())`) がどれだけ増えるか
+- loss の収束カーブがデフォルトとどう変わるか
+
+を比較してみてください。`D_MODEL * vocab_size = 64 * 10 = 640` パラメータ増える計算です。
 
 ---
 
@@ -164,17 +171,7 @@ logits = x @ self.out_proj     # 独立の出力射影
 
 ---
 
-## まとめ
+ここまでで「素の言語モデル」を訓練して動かす一巡が終わりました。
+次は instruction tuning を試して、「ChatGPT のような指示応答型」の挙動がどう作られるかを見てみましょう。
 
-このチュートリアルでは：
-
-1. **コードを実行** して訓練と生成を確認しました
-2. **データの中身** をトークン単位で観察しました
-3. **モデルの内部**（Embedding、Attention）を数値で確認しました
-4. **コードを改造** してハイパーパラメータやアルゴリズムの影響を実験しました
-
-tiny-LLM は小さなおもちゃですが、GPT などの本物の LLM と
-**まったく同じ仕組み** で動いています。
-ここで得た理解は、本格的な LLM の学習に直接つながります。
-
-より詳しい仕組みを知りたい方は、[ドキュメント](../01_data.md) へ進んでください。
+次へ: [Step 5: インストラクションチューニングを試す](05_instruction.md)

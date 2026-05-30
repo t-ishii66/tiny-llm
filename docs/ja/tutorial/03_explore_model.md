@@ -3,7 +3,7 @@
 訓練済みモデルの内部を実際に観察してみましょう。
 Embedding ベクトルや Attention の重みが、実際にどんな値になっているか確認します。
 
-引き続き `python -i tiny_llm.py` の対話モードで作業します。
+引き続き `uv run --with torch python -i tiny_llm.py` の対話モードで作業します。
 
 ---
 
@@ -32,8 +32,10 @@ torch.Size([10, 64])
 
 ```python
 >>> model.tok_emb[2][:10]
-tensor([...], requires_grad=True)
+tensor([-0.05,  0.13,  0.27, ...], requires_grad=True)
 ```
+
+数値は訓練ごとにランダム初期化から学習されるので、実行のたびに変わります。
 
 訓練によって、似た役割の単語は似たベクトルになっているはずです。
 コサイン類似度で確認してみましょう：
@@ -51,100 +53,148 @@ tensor([...], requires_grad=True)
 >>> similarity("mat", "log")    # どちらも "sat on the ___" の後に来る
 ```
 
+<details>
+<summary>コピペ用 (プロンプト記号なし)</summary>
+
+`>>>` / `...` を取り除いた生コード。対話モードに**そのまま貼り付け可能**です。
+
+```python
+import torch.nn.functional as F
+
+def similarity(word1, word2):
+    v1 = model.tok_emb[vocab[word1]]
+    v2 = model.tok_emb[vocab[word2]]
+    return F.cosine_similarity(v1.unsqueeze(0), v2.unsqueeze(0)).item()
+
+similarity("cat", "dog")    # 似た文脈で使われる
+similarity("cat", ".")      # まったく違う役割
+similarity("mat", "log")    # どちらも "sat on the ___" の後に来る
+```
+
+</details>
+
 "cat" と "dog" の類似度が高く、"cat" と "." の類似度が低ければ、
 モデルが単語の意味的な関係を（小さいながらも）学習したことを示しています。
 
 ---
 
-## 3.3 Attention の重みを可視化する
+## 3.3 Attention 重みを覗いてみる
 
-Transformer がどの単語に注目しているか見てみましょう。
+Transformer の核は「どのトークンがどこに注目しているか」を表す **Attention 重み行列**。第1層の attention 重みを取り出して眺めてみましょう。
 
-```python
->>> # テスト文をトークン化して Forward pass
->>> test_tokens = tokenize("the cat sat on the mat", vocab)
->>> x = torch.tensor([test_tokens])   # (1, 6)
->>> x.shape
-torch.Size([1, 6])
-```
-
-Attention スコアを取得するために、手動で途中まで計算します：
+計算の詳細は本編 [第2章 Self-Attention](../02_transformer.md) でじっくり解説しているので、ここでは **結果を見る** ことに集中します。以下のヘルパーを対話モードに貼り付けてください：
 
 ```python
 >>> import math
->>>
->>> # Embedding
->>> emb = model.tok_emb[x] + model.pos_emb[:6]   # (1, 6, 64)
->>>
->>> # 第1層のパラメータを取得
->>> layer = model.layers[0]
->>>
->>> # Pre-LN: Attention の前に Layer Norm を適用
->>> normed = layer_norm(emb, layer["ln1_g"], layer["ln1_b"])  # (1, 6, 64)
->>>
->>> # Q, K を計算（Layer Norm 後の値を使う）
->>> Q = normed @ layer["Wq"]    # (1, 6, 64)
->>> K = normed @ layer["Wk"]    # (1, 6, 64)
->>>
->>> # Attention スコア（マスク前）
->>> # ※ ここではヘッド分割なしの簡易版（64次元）。
->>> #    実際のモデルは4ヘッドに分割して sqrt(16) で割ります（3.4節参照）。
->>> scores = Q @ K.transpose(-2, -1) / math.sqrt(64)   # (1, 6, 6)
->>>
->>> # Causal mask 適用 + Softmax
->>> mask = torch.triu(torch.ones(6, 6), diagonal=1).bool()
->>> scores = scores.masked_fill(mask, float("-inf"))
->>> attn = torch.softmax(scores, dim=-1)
->>>
->>> print(attn[0].detach())
-```
-
-6×6 の Attention 重み行列（softmax後）が表示されます。各行が「その位置がどの位置に注目しているか」です：
-
-```
-行0 (the):  [1.00, 0.00, 0.00, 0.00, 0.00, 0.00]  ← 自分だけ見える
-行1 (cat):  [0.??, 0.??, 0.00, 0.00, 0.00, 0.00]  ← the と cat が見える
-行2 (sat):  [0.??, 0.??, 0.??, 0.00, 0.00, 0.00]
+>>> def attn_layer0(text):
+...     x = torch.tensor([tokenize(text, vocab)])
+...     T = x.shape[1]
+...     emb = model.tok_emb[x] + model.pos_emb[:T]
+...     L = model.layers[0]
+...     n = layer_norm(emb, L["ln1_g"], L["ln1_b"])
+...     Q, K = n @ L["Wq"], n @ L["Wk"]
+...     scores = (Q @ K.transpose(-2, -1)) / math.sqrt(64)
+...     mask = torch.triu(torch.ones(T, T), diagonal=1).bool()
+...     return torch.softmax(scores.masked_fill(mask, float("-inf")), dim=-1)[0]
 ...
 ```
 
-右上が 0.00 になっているのが **因果マスク** の効果です。
-未来の単語を見ることはできません。
+<details>
+<summary>コピペ用 (プロンプト記号なし)</summary>
+
+`>>>` / `...` を取り除いた生コード。対話モードに**そのまま貼り付け可能**です。
+
+```python
+import math
+
+def attn_layer0(text):
+    x = torch.tensor([tokenize(text, vocab)])
+    T = x.shape[1]
+    emb = model.tok_emb[x] + model.pos_emb[:T]
+    L = model.layers[0]
+    n = layer_norm(emb, L["ln1_g"], L["ln1_b"])
+    Q, K = n @ L["Wq"], n @ L["Wk"]
+    scores = (Q @ K.transpose(-2, -1)) / math.sqrt(64)
+    mask = torch.triu(torch.ones(T, T), diagonal=1).bool()
+    return torch.softmax(scores.masked_fill(mask, float("-inf")), dim=-1)[0]
+```
+
+</details>
+
+実行してみましょう：
+
+```python
+>>> attn = attn_layer0("the cat sat on the mat")
+>>> print(attn.detach().round(decimals=2))
+```
+
+6×6 の attention 重み行列が表示されます。各行が「その位置がどこに注目しているか」を示します：
+
+```
+行 0 (the): [1.00, 0.00, 0.00, 0.00, 0.00, 0.00]   ← 自分しか見えない
+行 1 (cat): [0.??, 0.??, 0.00, 0.00, 0.00, 0.00]   ← the と cat が見える
+行 2 (sat): [0.??, 0.??, 0.??, 0.00, 0.00, 0.00]
+...
+```
+
+**右上の三角形が 0 なのが causal mask の効果** — 「未来のトークンを見るのを禁止する」しくみが、こうして数値で確認できます。
+
+> マルチヘッド (4 ヘッド) ごとの違いを見たい人は、ヘルパーの `Q`, `K` を 4 ヘッドに分割してから同じ計算を回してみてください。手順は本編 [§2 Multi-Head Attention](../02_transformer.md) に。
 
 ---
 
-## 3.4 全ヘッドの Attention を比較する
+## 3.4 (Optional) Attention をヒートマップで描く
 
-マルチヘッド（4ヘッド）では、各ヘッドが異なるパターンで注目します：
+数値表より目で見たほうが分かりやすいので、matplotlib があれば可視化してみましょう。
 
-```python
->>> # Q, K を4ヘッドに分割（head_dim = 64 / 4 = 16）
->>> B, T, D = 1, 6, 64
->>> head_dim = D // 4
->>>
->>> q = Q.view(B, T, 4, head_dim).transpose(1, 2)  # (1, 4, 6, 16)
->>> k = K.view(B, T, 4, head_dim).transpose(1, 2)  # (1, 4, 6, 16)
->>>
->>> scores = q @ k.transpose(-2, -1) / math.sqrt(head_dim)
->>> mask = torch.triu(torch.ones(T, T), diagonal=1).bool()
->>> scores = scores.masked_fill(mask, float("-inf"))
->>> attn_heads = torch.softmax(scores, dim=-1)
->>>
->>> # 各ヘッドの Attention を表示
->>> for h in range(4):
-...     print(f"\n--- Head {h} ---")
-...     print(attn_heads[0, h].detach().round(decimals=2))
+```bash
+# まず matplotlib を入れた上で対話モードを起動
+uv run --with torch --with matplotlib python -i tiny_llm.py
 ```
 
-各ヘッドが異なるパターンで注目しているのを観察できます。
-あるヘッドは直前の単語に注目し、別のヘッドは文頭の単語に注目するかもしれません。
+3.3 のヘルパー `attn_layer0` を再度貼り付けてから：
+
+```python
+>>> import matplotlib.pyplot as plt
+>>> tokens = "the cat sat on the mat".split()
+>>> attn = attn_layer0("the cat sat on the mat")
+>>>
+>>> fig, ax = plt.subplots(figsize=(5, 4))
+>>> im = ax.imshow(attn.detach().numpy(), cmap="Blues")
+>>> ax.set_xticks(range(6)); ax.set_yticks(range(6))
+>>> ax.set_xticklabels(tokens); ax.set_yticklabels(tokens)
+>>> ax.set_xlabel("attended to"); ax.set_ylabel("from position")
+>>> plt.colorbar(im)
+>>> plt.tight_layout(); plt.show()
+```
+
+<details>
+<summary>コピペ用 (プロンプト記号なし)</summary>
+
+`>>>` を取り除いた生コード。対話モードに**そのまま貼り付け可能**です。
+
+```python
+import matplotlib.pyplot as plt
+tokens = "the cat sat on the mat".split()
+attn = attn_layer0("the cat sat on the mat")
+
+fig, ax = plt.subplots(figsize=(5, 4))
+im = ax.imshow(attn.detach().numpy(), cmap="Blues")
+ax.set_xticks(range(6)); ax.set_yticks(range(6))
+ax.set_xticklabels(tokens); ax.set_yticklabels(tokens)
+ax.set_xlabel("attended to"); ax.set_ylabel("from position")
+plt.colorbar(im)
+plt.tight_layout(); plt.show()
+```
+
+</details>
+
+下三角だけが色付き (右上の causal mask 部分は白)、対角線付近が濃い、というパターンが見えるはずです。
+ヘッドごとに異なる注目パターンを描き比べると、Multi-Head Attention の意義が直感的にわかります。
 
 ---
 
 ## 3.5 生成の過程を1ステップずつ追う
-
-> **注意**: prompt には学習コーパスに含まれる単語だけを使ってください。
-> 現在の `tokenize()` は語彙外単語を処理しないため、未知語があると `KeyError` になります。
 
 ```python
 >>> # "the cat sat on" から次の単語を予測
@@ -162,6 +212,29 @@ Attention スコアを取得するために、手動で途中まで計算しま�
 >>> for i, score in enumerate(next_logit.tolist()):
 ...     print(f"  {id2word[i]:>5s}: {score:.3f}")
 ```
+
+<details>
+<summary>コピペ用 (プロンプト記号なし)</summary>
+
+`>>>` / `...` を取り除いた生コード。対話モードに**そのまま貼り付け可能**です。
+
+```python
+# "the cat sat on" から次の単語を予測
+prompt = "the cat sat on"
+tokens = tokenize(prompt, vocab)
+print(tokens)
+
+# Forward pass
+x = torch.tensor([tokens])
+logits = model.forward(x)          # (1, 4, 10)
+next_logit = logits[0, -1, :]      # 最後の位置のスコア
+
+# 各単語のスコアを表示
+for i, score in enumerate(next_logit.tolist()):
+    print(f"  {id2word[i]:>5s}: {score:.3f}")
+```
+
+</details>
 
 最もスコアの高い単語が、`argmax` で選ばれます：
 

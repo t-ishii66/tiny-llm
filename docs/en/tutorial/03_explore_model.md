@@ -3,7 +3,7 @@
 Let's observe the internals of the trained model.
 We'll check what values the embedding vectors and attention weights actually take.
 
-Continue working in interactive mode with `python -i tiny_llm.py`.
+Continue working in interactive mode with `uv run --with torch python -i tiny_llm.py`.
 
 ---
 

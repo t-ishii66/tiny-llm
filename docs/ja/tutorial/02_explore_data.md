@@ -9,10 +9,10 @@ Python の対話モード（または Jupyter Notebook）で以下を試して�
 ## 2.1 対話モードの起動
 
 ```bash
-python -i tiny_llm.py
+uv run --with torch python -i tiny_llm.py
 ```
 
-`-i` をつけると、プログラム実行後に対話モードに入ります。
+`python -i` でスクリプトを走らせたあと、そのまま対話モードに入ります。
 `model`、`vocab`、`id2word` などの変数がそのまま使えます。
 
 ---

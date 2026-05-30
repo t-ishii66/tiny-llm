@@ -1,3 +1,17 @@
+---
+title: "tiny-LLM from scratch — Learn LLMs with a Minimal Transformer"
+description: "tiny-LLM is a minimal Transformer learning project. Understand Self-Attention, QKV, multi-head attention, training, and text generation with about 140 lines of executable code."
+keywords: "tiny-LLM, Transformer, LLM, GPT, Self-Attention, Query Key Value, QKV, Multi-Head Attention, LayerNorm, Residual Connection, PyTorch, machine learning, deep learning, NLP, language model, generative AI, AI tutorial"
+permalink: /
+canonical_url: "https://t-ishii66.github.io/tiny-llm/"
+---
+
+**English** | [日本語](README-jp.md)
+
+<p>
+  <img src="top.png" alt="tiny-LLM top image" width="720" style="max-width: 100%; height: auto;">
+</p>
+
 # tiny-LLM from scratch
 
 A single-file Transformer implementation designed to teach the core algorithms behind large language models — self-attention, Query/Key/Value, multi-head attention, and next-token prediction — in the most concise Python code possible.
@@ -34,6 +48,7 @@ This is a learning tool, not a production model. Key simplifications include:
 | Training data | 40 words | Trillions of tokens |
 | Generation | Greedy (argmax) | Sampling with temperature, top-k, top-p |
 | Dropout / regularization | None | Dropout, weight decay, etc. |
+| **Core algorithm** | **Same** | **Same** |
 
 ## Why It's Still Useful
 
@@ -42,33 +57,44 @@ Despite these simplifications, the core algorithms are **identical** to those us
 ## Quick Start
 
 ```bash
-pip install torch
-python tiny_llm.py
+uv run --with torch tiny_llm.py
+```
+
+If you don't have uv installed yet, see the install steps in [Tutorial Step 1](docs/en/tutorial/01_setup.md).
+
+Running the script displays the training progress and generation results (exact numbers may vary between runs):
+
+```
+epoch   20  loss=1.9469
+epoch   40  loss=1.5257
+...
+epoch  200  loss=0.1147
+
+prompt: "the cat sat on"
+output: the cat sat on the mat . the dog sat on the log .
+        the cat saw the dog . the dog saw the
 ```
 
 ## Documentation
-
-### English
 
 1. **[Data Preparation](docs/en/01_data.md)** — Vocabulary, tokenization, and training data construction
 2. **[Transformer](docs/en/02_transformer.md)** — Embedding, self-attention, FFN, and the full forward pass
 3. **[Training](docs/en/03_training.md)** — Loss function, backpropagation, and parameter updates
    - **[Gradient Math Supplement](docs/en/03a_gradient.md)** — Derivatives, partial derivatives, and chain rule with concrete examples
 4. **[Generation](docs/en/04_generation.md)** — Next-word prediction and the path to real LLMs
+5. **[Instruction Tuning](docs/en/05_instruction_tuning.md)** — Alpaca format, response masking, and building an instruction-following LLM
 
-**Tutorial:**
-[Step 1: Setup and Run](docs/en/tutorial/01_setup.md) → [Step 2: Exploring the Data](docs/en/tutorial/02_explore_data.md) → [Step 3: Peeking Inside the Transformer](docs/en/tutorial/03_explore_model.md) → [Step 4: Experiments and Modifications](docs/en/tutorial/04_experiments.md)
+### Tutorial
 
-### 日本語
+Start here if you're new. Run the code yourself and build your understanding of the Transformer step by step.
 
-1. **[データの準備](docs/ja/01_data.md)** — 語彙構築、トークン化、訓練データの作り方
-2. **[Transformer](docs/ja/02_transformer.md)** — Embedding、Self-Attention、FFN、Forward Pass の全て
-3. **[訓練](docs/ja/03_training.md)** — Cross-Entropy Loss、誤差逆伝播、パラメータ更新
-   - **[勾配の数学（補足）](docs/ja/03a_gradient.md)** — 微分・偏微分・連鎖律を具体的な数値で解説
-4. **[テキスト生成](docs/ja/04_generation.md)** — 次の単語の予測、Greedy Decoding、本物の LLM との比較
-
-**チュートリアル:**
-[Step 1: セットアップと実行](docs/ja/tutorial/01_setup.md) → [Step 2: データを観察する](docs/ja/tutorial/02_explore_data.md) → [Step 3: Transformer の中を覗く](docs/ja/tutorial/03_explore_model.md) → [Step 4: 改造してみる](docs/ja/tutorial/04_experiments.md)
+| Tutorial | Content | Time |
+|---|---|---|
+| [Step 1: Setup and Run](docs/en/tutorial/01_setup.md) | Environment setup, running the code, checking the output | 5 min |
+| [Step 2: Exploring the Data](docs/en/tutorial/02_explore_data.md) | Examine tokenization and training data with your own eyes | 10 min |
+| [Step 3: Peeking Inside the Transformer](docs/en/tutorial/03_explore_model.md) | Visualize attention weights and embedding vectors | 15 min |
+| [Step 4: Experiments and Modifications](docs/en/tutorial/04_experiments.md) | Change parameters, modify the corpus, and experiment | 15 min |
+| [Step 5: Try Instruction Tuning](docs/en/tutorial/05_instruction.md) | Run the 3-stage Alpaca-style instruction tuning pipeline and see the limits of memorization | 15 min |
 
 ## Credits
 

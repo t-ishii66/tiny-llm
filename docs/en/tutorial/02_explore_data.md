@@ -9,11 +9,15 @@ Try the following in Python's interactive mode (or a Jupyter Notebook).
 ## 2.1 Starting Interactive Mode
 
 ```bash
-python -i tiny_llm.py
+uv run --with torch python -i tiny_llm.py
 ```
 
-Adding `-i` enters interactive mode after the program runs.
+`python -i` runs the program and then drops into interactive mode.
 Variables like `model`, `vocab`, and `id2word` remain available for use.
+
+> **How the args are passed**: everything after `uv run --with torch` is the command that's actually executed.
+> The `uv run --with torch tiny_llm.py` form used in Tutorial Step 1 is shorthand for
+> `uv run --with torch python tiny_llm.py`; here we spell out `python` so we can add the `-i` flag.
 
 ---
 

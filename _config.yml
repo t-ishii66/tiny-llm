@@ -2,9 +2,35 @@ title: "tiny-LLM from scratch"
 description: "Learn the entire Transformer architecture in just 1 file and ~140 lines of code. Self-Attention, QKV, Multi-Head Attention, training, and text generation."
 url: "https://t-ishii66.github.io"
 baseurl: "/tiny-llm"
+repository: t-ishii66/tiny-llm
 
 theme: jekyll-theme-cayman
+
+author: t-ishii66
+lang: en
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
 
 exclude:
   - CLAUDE.md
   - PROBLEMS.md
+  - "*PROBLEMS*.md"
+  - "*.bak"
+  - Makefile
+  - build/
+  - dist/
+  - target/
+  - node_modules/
+  - .vscode/
+  - "*.o"
+  - "*.so"
+  - "*.dylib"
+  - "*.exe"
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  math_engine: mathjax
