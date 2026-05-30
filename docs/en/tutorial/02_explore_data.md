@@ -1,6 +1,6 @@
 # Step 2: Exploring the Data
 
-Let's examine the data that gets passed to the Transformer with your own eyes.
+Let's examine the contents of the data being passed to the Transformer with your own eyes.
 
 Try the following in Python's interactive mode (or a Jupyter Notebook).
 
@@ -12,12 +12,8 @@ Try the following in Python's interactive mode (or a Jupyter Notebook).
 uv run --with torch python -i tiny_llm.py
 ```
 
-`python -i` runs the program and then drops into interactive mode.
+With `python -i`, after running the script, you drop directly into interactive mode.
 Variables like `model`, `vocab`, and `id2word` remain available for use.
-
-> **How the args are passed**: everything after `uv run --with torch` is the command that's actually executed.
-> The `uv run --with torch tiny_llm.py` form used in Tutorial Step 1 is shorthand for
-> `uv run --with torch python tiny_llm.py`; here we spell out `python` so we can add the `-i` flag.
 
 ---
 
@@ -44,7 +40,7 @@ A vocabulary of just 10 words. Each word is assigned a number from 0 to 9.
 
 The sentence is converted into a sequence of numbers. `"the"` is always `1` no matter where it appears.
 
-Let's also verify the reverse direction:
+Let's check the reverse direction too:
 
 ```python
 >>> [id2word[i] for i in [1, 2, 3, 4, 1, 5]]
@@ -53,7 +49,7 @@ Let's also verify the reverse direction:
 
 ---
 
-## 2.4 Checking the Shape of Training Data
+## 2.4 Checking the Shape of the Training Data
 
 ```python
 >>> inputs, targets = make_training_data(corpus, vocab)
@@ -65,7 +61,7 @@ torch.Size([28, 12])
 torch.Size([28, 12])
 ```
 
-28 samples (1 batch), each with a length of 12 tokens.
+28 samples (1 batch), with each sample being 12 tokens long.
 
 ---
 
@@ -115,13 +111,13 @@ Sample 1:     cat sat on the mat .  the dog sat on the log
 Sample 2:         sat on the mat .  the dog sat on the log .
 ```
 
-The window slides by one word at a time, producing 28 samples in total.
+The window slides one word at a time, producing 28 samples in total.
 
 ---
 
 ## 2.7 Key Takeaways So Far
 
-- **Vocabulary (vocab)**: Simply assigning numbers to 10 words
+- **Vocabulary (vocab)**: Just assigning numbers to 10 words
 - **Tokenization**: Converting a sentence into a sequence of numbers
 - **Training data**: Sliding a 12-token window to create input-target (shifted by one) pairs
 - **The model's task**: Predicting the "next word" at each position

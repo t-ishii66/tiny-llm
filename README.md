@@ -1,6 +1,6 @@
 ---
 title: "tiny-LLM from scratch — Learn LLMs with a Minimal Transformer"
-description: "tiny-LLM is a minimal Transformer learning project. Understand Self-Attention, QKV, multi-head attention, training, and text generation with about 140 lines of executable code."
+description: "tiny-LLM is a minimal Transformer learning project. Understand Self-Attention, QKV, multi-head attention, training, and text generation with about 140 lines of executable code (+ ~100 lines for instruction tuning)."
 keywords: "tiny-LLM, Transformer, LLM, GPT, Self-Attention, Query Key Value, QKV, Multi-Head Attention, LayerNorm, Residual Connection, PyTorch, machine learning, deep learning, NLP, language model, generative AI, AI tutorial"
 permalink: /
 canonical_url: "https://t-ishii66.github.io/tiny-llm/"
@@ -18,7 +18,7 @@ A single-file Transformer implementation designed to teach the core algorithms b
 
 ## What This Is
 
-This project strips a GPT-style Transformer down to its bare essentials. The entire model fits in one file (`tiny_llm.py`, ~140 lines of executable code) and trains in seconds on a toy corpus. The forward pass is written by hand; only backpropagation is delegated to PyTorch's autograd.
+This project strips a GPT-style Transformer down to its bare essentials. The model body fits in one file (`tiny_llm.py`, ~140 lines of executable code; the instruction tuning covered in Chapter 5 adds ~100 more lines in `tiny_llm_instruct.py`) and trains in seconds on a toy corpus. The forward pass is written by hand; only backpropagation is delegated to PyTorch's autograd.
 
 ```
 "the cat sat on" → Transformer → "the" (predicted next word)
@@ -52,7 +52,7 @@ This is a learning tool, not a production model. Key simplifications include:
 
 ## Why It's Still Useful
 
-Despite these simplifications, the core algorithms are **identical** to those used in GPT, LLaMA, and other state-of-the-art models. The difference is scale, not structure. Understanding this code gives you a solid foundation for reading real-world Transformer implementations, because every concept here — Q/K/V projections, scaled dot-product attention, causal masks, residual connections, layer normalization, and autoregressive generation — carries over directly.
+Even with these simplifications, the core algorithms implemented here are the same ones used in GPT, LLaMA, and other state-of-the-art models. The differences are primarily about scale, while the foundational structure is shared. Understanding this code gives you a solid foundation for reading real-world Transformer implementations, because every concept here — Q/K/V projections, scaled dot-product attention, causal masks, residual connections, layer normalization, and autoregressive generation — carries over directly.
 
 ## Quick Start
 
@@ -77,16 +77,16 @@ output: the cat sat on the mat . the dog sat on the log .
 
 ## Documentation
 
-1. **[Data Preparation](docs/en/01_data.md)** — Vocabulary, tokenization, and training data construction
-2. **[Transformer](docs/en/02_transformer.md)** — Embedding, self-attention, FFN, and the full forward pass
-3. **[Training](docs/en/03_training.md)** — Loss function, backpropagation, and parameter updates
-   - **[Gradient Math Supplement](docs/en/03a_gradient.md)** — Derivatives, partial derivatives, and chain rule with concrete examples
-4. **[Generation](docs/en/04_generation.md)** — Next-word prediction and the path to real LLMs
-5. **[Instruction Tuning](docs/en/05_instruction_tuning.md)** — Alpaca format, response masking, and building an instruction-following LLM
+| Document | Content |
+|---|---|
+| [Chapter 1: Data Preparation](docs/en/01_data.md) | Vocabulary, tokenization, and training data construction |
+| [Chapter 2: Transformer](docs/en/02_transformer.md) | Embedding, self-attention, FFN, and the full forward pass |
+| [Chapter 3: Training](docs/en/03_training.md) | Loss function, backpropagation, and parameter updates |
+| [Chapter 3 Supplement: Gradient Math](docs/en/03a_gradient.md) | Derivatives, partial derivatives, and chain rule with concrete examples |
+| [Chapter 4: Generation](docs/en/04_generation.md) | Next-word prediction, greedy decoding, and comparison with real LLMs |
+| [Chapter 5: Instruction Tuning](docs/en/05_instruction_tuning.md) | Alpaca format, response masking, and building an instruction-following LLM |
 
 ### Tutorial
-
-Start here if you're new. Run the code yourself and build your understanding of the Transformer step by step.
 
 | Tutorial | Content | Time |
 |---|---|---|
@@ -100,9 +100,9 @@ Start here if you're new. Run the code yourself and build your understanding of 
 
 - Project Planning: t-ishii66
 - Architecture Design: t-ishii66
-- Programming: Claude Opus 4.6, t-ishii66
-- Document: Claude Opus 4.6, GPT 5.3 Codex, t-ishii66
+- Programming: Claude Opus 4.7, t-ishii66
+- Document: Claude Opus 4.7, GPT 5.3 Codex, t-ishii66
 - Review: t-ishii66
-- English translation: Claude Opus 4.6, GPT 5.3 Codex
+- English translation: Claude Opus 4.7, GPT 5.3 Codex
 
 Copyright(C) 2026 t-ishii66. All rights reserved.

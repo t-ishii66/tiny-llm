@@ -13,3 +13,7 @@ _site/
 # Python virtual environments
 venv/
 .venv/
+
+# Python bytecode cache
+__pycache__/
+*.pyc

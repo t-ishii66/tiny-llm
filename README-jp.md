@@ -1,6 +1,6 @@
 ---
 title: "tiny-LLM from scratch — 最小限の Transformer で LLM を学ぶ"
-description: "tiny-LLM は最小限の Transformer 学習プロジェクト。Self-Attention、QKV、Multi-Head Attention、訓練、テキスト生成を約 140 行の実行コードで理解できます。"
+description: "tiny-LLM は最小限の Transformer 学習プロジェクト。Self-Attention、QKV、Multi-Head Attention、訓練、テキスト生成を約 140 行（instruction tuning +約 100 行）の実行コードで理解できます。"
 keywords: "tiny-LLM, Transformer, LLM, GPT, Self-Attention, Query Key Value, QKV, Multi-Head Attention, LayerNorm, Residual Connection, PyTorch, 機械学習, 深層学習, NLP, 言語モデル, 生成AI, AIチュートリアル, トランスフォーマー"
 lang: ja
 canonical_url: "https://t-ishii66.github.io/tiny-llm/README-jp.html"
@@ -18,7 +18,7 @@ GPT のような大規模言語モデル（LLM）の核心となるアルゴリ�
 
 ## このプロジェクトについて
 
-GPT 系の Transformer を必要最低限まで削ぎ落としたものです。モデル全体が 1 ファイル（`tiny_llm.py`、実行コード約 140 行）に収まり、おもちゃのコーパスで数秒で学習できます。順伝播は手書きで、逆伝播のみ PyTorch の autograd に任せています。
+GPT 系の Transformer を必要最低限まで削ぎ落としたものです。モデル本体は 1 ファイル（`tiny_llm.py`、実行コード約 140 行。第5章で扱う instruction tuning は `tiny_llm_instruct.py` の追加 +約 100 行）に収まり、おもちゃのコーパスで数秒で学習できます。順伝播は手書きで、逆伝播のみ PyTorch の autograd に任せています。
 
 ```
 "the cat sat on" → Transformer → "the" （次の単語を予測）
@@ -77,16 +77,16 @@ output: the cat sat on the mat . the dog sat on the log .
 
 ## ドキュメント
 
-1. **[データの準備](docs/ja/01_data.md)** — 語彙構築、トークン化、訓練データの作り方
-2. **[Transformer](docs/ja/02_transformer.md)** — Embedding、Self-Attention、FFN、Forward Pass の全て
-3. **[訓練](docs/ja/03_training.md)** — Cross-Entropy Loss、誤差逆伝播、パラメータ更新
-   - **[勾配の数学（補足）](docs/ja/03a_gradient.md)** — 微分・偏微分・連鎖律を具体的な数値で解説
-4. **[テキスト生成](docs/ja/04_generation.md)** — 次の単語の予測、Greedy Decoding、実際の LLM との比較
-5. **[インストラクションチューニング](docs/ja/05_instruction_tuning.md)** — Alpaca 形式、Response マスキング、指示に従う LLM の作り方
+| ドキュメント | 内容 |
+|---|---|
+| [第1章: データの準備](docs/ja/01_data.md) | 語彙構築、トークン化、訓練データの作り方 |
+| [第2章: Transformer](docs/ja/02_transformer.md) | Embedding、Self-Attention、FFN、Forward Pass の全て |
+| [第3章: 訓練](docs/ja/03_training.md) | Cross-Entropy Loss、誤差逆伝播、パラメータ更新 |
+| [第3章 補足: 勾配の数学](docs/ja/03a_gradient.md) | 微分・偏微分・連鎖律を具体的な数値で解説 |
+| [第4章: テキスト生成](docs/ja/04_generation.md) | 次の単語の予測、Greedy Decoding、実際の LLM との比較 |
+| [第5章: インストラクションチューニング](docs/ja/05_instruction_tuning.md) | Alpaca 形式、Response マスキング、指示に従う LLM の作り方 |
 
 ### チュートリアル
-
-初めての方はこちらから。コードを実際に動かしながら、Transformer の仕組みを段階的に理解していきます。
 
 | チュートリアル | 内容 | 所要時間 |
 |---|---|---|

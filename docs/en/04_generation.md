@@ -153,17 +153,18 @@ In this example, it always selects the maximum value, **2.1**.
 It's simple, but because it always picks only "the most probable word,"
 it tends to loop the same patterns.
 
-> **Real LLMs** use techniques like sampling from the probability distribution (temperature),
-> or choosing from the top k candidates (top-k) to produce more diverse outputs.
+> For this reason, in generation it's common to add diversity using techniques like
+> sampling from the probability distribution (temperature) or choosing from the top
+> k candidates (top-k).
 
 ### How Temperature Works
 
-Temperature is a coefficient that controls how "sharp" or "flat" logits become before sampling.
+Temperature is a coefficient that controls how much the logits are "sharpened/flattened" before sampling.
 
 $$p_i = \text{softmax}\left(\frac{\text{logit}_i}{T}\right)$$
 
-These $p_i$ values are used as the **next-token probabilities**, and one token is selected from
-that distribution to decide the next word (in temperature sampling).
+These $p_i$ values are used as the **next-word probabilities**, and one word is selected from
+that distribution to decide the next word (in the case of temperature sampling).
 
 - `T < 1.0`: distribution becomes sharper (focuses on high-score words) → more deterministic output
 - `T = 1.0`: uses the model's original distribution as-is
@@ -194,10 +195,9 @@ and that's actually correct. With only 40 words and 10 vocabulary items, memoriz
 
 ---
 
-## 4.5 From Here to Real LLMs
+## 4.5 Differences in Scale
 
-The difference between tiny-LLM and real LLMs like GPT-4 is
-**not a difference in fundamental mechanism, but a difference in scale**.
+Let's place tiny-LLM and a GPT-4 class model side by side.
 
 | | tiny-LLM | GPT-4 class |
 |---|---|---|
@@ -209,16 +209,8 @@ The difference between tiny-LLM and real LLMs like GPT-4 is
 | Training data | 40 words | Trillions of tokens |
 | Training time | Seconds | Months (thousands of GPUs) |
 
-However, the core algorithms are **exactly the same**:
-
-1. Convert words to vectors (Embedding)
-2. Understand context with Self-Attention (Q, K, V)
-3. Transform representations with Feed-Forward
-4. Train with a "next word" prediction loss
-5. Generate one word at a time with the trained model
-
-When you scale up, instead of memorization, **generalization** begins to emerge.
-Being able to predict appropriate next words for "sentences never seen before,"
+When you scale up, **generalization** begins to emerge instead of memorization.
+Being able to predict appropriate next words even for "sentences never seen before,"
 based on learned patterns — that is the power of large language models.
 
 ---
@@ -249,5 +241,5 @@ based on learned patterns — that is the power of large language models.
 - Generation repeats prediction
 
 tiny-LLM is a small toy, but
-the essence of the Transformer — Self-Attention, Q/K/V, residual connections,
-Layer Norm, and "next-word prediction" — is exactly the same as the real thing.
+the core of the Transformer that you implemented here — Self-Attention, Q/K/V,
+residual connections, Layer Norm, and "next-word prediction" — is something you assembled with your own hands.
