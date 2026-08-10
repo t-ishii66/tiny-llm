@@ -1,5 +1,7 @@
 # Step 3: Peeking Inside the Transformer
 
+![Peeking Inside the Transformer](../../images/tutorial-03-explore-model.png)
+
 Let's actually observe the internals of the trained model.
 We'll check what values the embedding vectors and attention weights actually take.
 

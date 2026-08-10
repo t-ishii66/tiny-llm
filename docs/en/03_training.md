@@ -1,5 +1,7 @@
 # Chapter 3: Training — How the Model Gets Smarter
 
+![Training](../images/chapter-03-training.png)
+
 In the previous chapter, we saw how input is processed into `logits` (scores for each word).
 In this chapter, we explain the **training loop** mechanism that compares those scores
 with the correct answers and updates the parameters.

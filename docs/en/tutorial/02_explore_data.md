@@ -1,5 +1,7 @@
 # Step 2: Exploring the Data
 
+![Exploring the Data](../../images/tutorial-02-explore-data.png)
+
 Let's examine the contents of the data being passed to the Transformer with your own eyes.
 
 Try the following in Python's interactive mode (or a Jupyter Notebook).

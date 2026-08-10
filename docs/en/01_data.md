@@ -1,5 +1,7 @@
 # Chapter 1: Data Preparation — Turning Text into a Model-Ready Format
 
+![Data Preparation](../images/chapter-01-data.png)
+
 LLMs only work with numbers.
 Converting "English sentences" into "sequences of numbers" and then creating "input-target pairs" —
 this chapter walks through the entire process with concrete examples.

@@ -1,5 +1,7 @@
 # Step 1: Setup and Run
 
+![Setup and Run](../../images/tutorial-01-setup.png)
+
 Let's start by running the code.
 
 ---

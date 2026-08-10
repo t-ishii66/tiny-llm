@@ -1,5 +1,7 @@
 # Chapter 2: Transformer — The Mechanism for Understanding Context
 
+![Transformer](../images/chapter-02-transformer.png)
+
 In the previous chapter, we created the `inputs` tensor (28, 12).
 In this chapter, we follow how this sequence of numbers is processed inside
 the Transformer to arrive at "next word predictions."

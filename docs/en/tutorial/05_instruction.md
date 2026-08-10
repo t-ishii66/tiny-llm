@@ -1,5 +1,7 @@
 # Step 5: Try Instruction Tuning
 
+![Try Instruction Tuning](../../images/tutorial-05-instruction.png)
+
 Let's actually run the Alpaca-format Instruction Tuning we saw in Chapter 5 (main text) and experience it firsthand.
 We'll observe how a pretrained model learns 4 instruction-response pairs and acquires "respond to an instruction" behavior.
 However, we'll also see with our own eyes that the result is "rote memorization" and that there is no generalization like a real LLM.

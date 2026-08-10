@@ -1,5 +1,7 @@
 # Chapter 4: Text Generation — Predicting the Next Word
 
+![Text Generation](../images/chapter-04-generation.png)
+
 Training is complete. All of the model's parameters have been
 tuned to "correctly predict the next word."
 

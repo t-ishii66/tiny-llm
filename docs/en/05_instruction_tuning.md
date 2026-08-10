@@ -1,5 +1,7 @@
 # Chapter 5: Instruction Tuning — How to Build an LLM That Follows Instructions
 
+![Instruction Tuning](../images/chapter-05-instruction-tuning.png)
+
 Through Chapter 4, the Transformer was completed as a model that **"predicts the next word."**
 It can produce output that looks like memorized snippets of the corpus,
 but it doesn't yet behave like ChatGPT, which "answers the user's question."

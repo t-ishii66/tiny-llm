@@ -1,5 +1,7 @@
 # Step 4: Modifying the Code
 
+![Modifying the Code](../../images/tutorial-04-experiments.png)
+
 By now, you've gained a sense of how the Transformer works. Let's modify the code and run some experiments.
 
 > **The working style changes from here on.**

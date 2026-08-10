@@ -1,5 +1,7 @@
 # Step 3: Transformer の中を覗く
 
+![Transformer の中を覗く](../../images/tutorial-03-explore-model.png)
+
 訓練済みモデルの内部を実際に観察してみましょう。
 Embedding ベクトルや Attention の重みが、実際にどんな値になっているか確認します。
 

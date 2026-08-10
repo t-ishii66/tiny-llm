@@ -1,5 +1,7 @@
 # 第2章: Transformer — 文脈を理解する仕組み
 
+![Transformer](../images/chapter-02-transformer.png)
+
 前章で `inputs` テンソル (28, 12) を作りました。
 この章では、この数値の列が Transformer の中でどう処理され、
 「次の単語の予測」に至るかを追いかけます。

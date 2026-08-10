@@ -1,5 +1,7 @@
 # Supplement: Mathematical Intuition for Gradients
 
+![Gradient](../images/chapter-03a-gradient.png)
+
 Chapter 3 introduced the concept of "gradients."
 Here, we explain the meaning of gradients mathematically using concrete numerical examples.
 

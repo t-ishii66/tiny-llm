@@ -1,5 +1,7 @@
 # Step 2: データを観察する
 
+![データを観察する](../../images/tutorial-02-explore-data.png)
+
 Transformer に渡されるデータの中身を、自分の目で確認しましょう。
 
 Python の対話モード（または Jupyter Notebook）で以下を試してください。
