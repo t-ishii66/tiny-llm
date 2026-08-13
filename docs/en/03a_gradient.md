@@ -19,7 +19,7 @@ This function reaches its minimum value of 0 when $w = 3$.
 
 The **derivative** is the ratio of how much the loss changes when $w$ is moved slightly:
 
-$$\frac{d\,\text{loss}}{d\,w} = 2(w - 3)$$
+$$\frac{d\thinspace \text{loss}}{d\thinspace w} = 2(w - 3)$$
 
 Let's look at concrete values:
 
@@ -39,7 +39,7 @@ When w = 3.0:
 
 The **update rule** moves $w$ in the **opposite direction** of the derivative:
 
-$$w \leftarrow w - \eta \cdot \frac{d\,\text{loss}}{d\,w}$$
+$$w \leftarrow w - \eta \cdot \frac{d\thinspace \text{loss}}{d\thinspace w}$$
 
 With $\eta = 0.1$ (learning rate):
 
@@ -64,11 +64,11 @@ The minimum is loss = 0 when $w_1 = 3, w_2 = -1$.
 
 A partial derivative is "the rate of change when moving only one parameter while keeping the others fixed":
 
-$$\frac{\partial\,\text{loss}}{\partial\,w_1} = 2(w_1 - 3), \quad \frac{\partial\,\text{loss}}{\partial\,w_2} = 2(w_2 + 1)$$
+$$\frac{\partial\thinspace \text{loss}}{\partial\thinspace w_1} = 2(w_1 - 3), \quad \frac{\partial\thinspace \text{loss}}{\partial\thinspace w_2} = 2(w_2 + 1)$$
 
 The vector combining these two is the **gradient**:
 
-$$\nabla \text{loss} = \left(\frac{\partial\,\text{loss}}{\partial\,w_1},\; \frac{\partial\,\text{loss}}{\partial\,w_2}\right)$$
+$$\nabla \text{loss} = \left(\frac{\partial\thinspace \text{loss}}{\partial\thinspace w_1},\thickspace \frac{\partial\thinspace \text{loss}}{\partial\thinspace w_2}\right)$$
 
 Updates are performed on all parameters **simultaneously**:
 
@@ -91,7 +91,7 @@ Even with two variables, it's the same thing as one variable — just done **ind
 tiny-LLM has approximately 68,000 parameters.
 But what it does is exactly the same as the two-variable case:
 
-$$w_i \leftarrow w_i - \eta \cdot \frac{\partial\,\text{loss}}{\partial\,w_i} \quad (i = 1, 2, \ldots, 68000)$$
+$$w_i \leftarrow w_i - \eta \cdot \frac{\partial\thinspace \text{loss}}{\partial\thinspace w_i} \quad (i = 1, 2, \ldots, 68000)$$
 
 Computing 68,000 partial derivatives by hand is impossible.
 However, using the **chain rule**, they can be calculated mechanically.
@@ -124,7 +124,7 @@ x → Embedding → Attention → FFN → ... → logits → loss
 
 Applying the chain rule repeatedly:
 
-$$\frac{\partial\,\text{loss}}{\partial\,W_q} = \frac{\partial\,\text{loss}}{\partial\,\text{logits}} \cdot \frac{\partial\,\text{logits}}{\partial\,\text{attn}} \cdot \frac{\partial\,\text{attn}}{\partial\,W_q}$$
+$$\frac{\partial\thinspace \text{loss}}{\partial\thinspace W_q} = \frac{\partial\thinspace \text{loss}}{\partial\thinspace \text{logits}} \cdot \frac{\partial\thinspace \text{logits}}{\partial\thinspace \text{attn}} \cdot \frac{\partial\thinspace \text{attn}}{\partial\thinspace W_q}$$
 
 Just by **multiplying the local derivatives at each layer**, we can obtain gradients even for parameters close to the input.
 
@@ -137,8 +137,8 @@ PyTorch's `loss.backward()` performs this chain rule computation automatically.
 
 | Concept | Meaning |
 |---------|---------|
-| Derivative $\frac{d\,\text{loss}}{dw}$ | How much loss changes when $w$ is moved slightly |
-| Partial derivative $\frac{\partial\,\text{loss}}{\partial w_i}$ | Rate of change when only $w_i$ is moved while others are fixed |
+| Derivative $\frac{d\thinspace \text{loss}}{dw}$ | How much loss changes when $w$ is moved slightly |
+| Partial derivative $\frac{\partial\thinspace \text{loss}}{\partial w_i}$ | Rate of change when only $w_i$ is moved while others are fixed |
 | Gradient $\nabla\text{loss}$ | Vector combining all partial derivatives |
 | Chain rule | Computing derivatives of composite functions as the product of each stage's derivatives |
 | Gradient descent | Moving parameters in the opposite direction of the gradient to reduce loss |

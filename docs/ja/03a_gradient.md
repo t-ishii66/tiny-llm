@@ -19,7 +19,7 @@ $$\text{loss}(w) = (w - 3)^2$$
 
 **微分** は「$w$ を少し動かしたとき、loss がどれだけ変わるか」の比率です：
 
-$$\frac{d\,\text{loss}}{d\,w} = 2(w - 3)$$
+$$\frac{d\thinspace \text{loss}}{d\thinspace w} = 2(w - 3)$$
 
 具体的な値で見てみましょう：
 
@@ -39,7 +39,7 @@ w = 3.0 のとき:
 
 **更新則** は、微分の **逆方向** に $w$ を動かします：
 
-$$w \leftarrow w - \eta \cdot \frac{d\,\text{loss}}{d\,w}$$
+$$w \leftarrow w - \eta \cdot \frac{d\thinspace \text{loss}}{d\thinspace w}$$
 
 $\eta = 0.1$（学習率）として：
 
@@ -64,11 +64,11 @@ $$\text{loss}(w_1, w_2) = (w_1 - 3)^2 + (w_2 + 1)^2$$
 
 偏微分は「他のパラメータを固定して、1つだけ動かしたときの変化率」：
 
-$$\frac{\partial\,\text{loss}}{\partial\,w_1} = 2(w_1 - 3), \quad \frac{\partial\,\text{loss}}{\partial\,w_2} = 2(w_2 + 1)$$
+$$\frac{\partial\thinspace \text{loss}}{\partial\thinspace w_1} = 2(w_1 - 3), \quad \frac{\partial\thinspace \text{loss}}{\partial\thinspace w_2} = 2(w_2 + 1)$$
 
 この2つをまとめたベクトルが **勾配（gradient）** です：
 
-$$\nabla \text{loss} = \left(\frac{\partial\,\text{loss}}{\partial\,w_1},\; \frac{\partial\,\text{loss}}{\partial\,w_2}\right)$$
+$$\nabla \text{loss} = \left(\frac{\partial\thinspace \text{loss}}{\partial\thinspace w_1},\thickspace \frac{\partial\thinspace \text{loss}}{\partial\thinspace w_2}\right)$$
 
 更新は各パラメータを **同時に** 行います：
 
@@ -91,7 +91,7 @@ w1 = 5.0, w2 = 1.0 のとき:
 tiny-LLM のパラメータ数は約 68,000 です。
 しかしやっていることは2変数の場合とまったく同じです：
 
-$$w_i \leftarrow w_i - \eta \cdot \frac{\partial\,\text{loss}}{\partial\,w_i} \quad (i = 1, 2, \ldots, 68000)$$
+$$w_i \leftarrow w_i - \eta \cdot \frac{\partial\thinspace \text{loss}}{\partial\thinspace w_i} \quad (i = 1, 2, \ldots, 68000)$$
 
 68,000 個の偏微分を1つ1つ手で求めるのは不可能です。
 しかし **連鎖律（chain rule）** を使えば、機械的に計算できます。
@@ -124,7 +124,7 @@ x → Embedding → Attention → FFN → ... → logits → loss
 
 連鎖律を繰り返し適用すると：
 
-$$\frac{\partial\,\text{loss}}{\partial\,W_q} = \frac{\partial\,\text{loss}}{\partial\,\text{logits}} \cdot \frac{\partial\,\text{logits}}{\partial\,\text{attn}} \cdot \frac{\partial\,\text{attn}}{\partial\,W_q}$$
+$$\frac{\partial\thinspace \text{loss}}{\partial\thinspace W_q} = \frac{\partial\thinspace \text{loss}}{\partial\thinspace \text{logits}} \cdot \frac{\partial\thinspace \text{logits}}{\partial\thinspace \text{attn}} \cdot \frac{\partial\thinspace \text{attn}}{\partial\thinspace W_q}$$
 
 各層の **局所的な微分を掛け合わせるだけ** で、入力に近いパラメータの勾配も求まります。
 
@@ -137,8 +137,8 @@ PyTorch の `loss.backward()` は、この連鎖律の計算を自動的に行�
 
 | 概念 | 意味 |
 |------|------|
-| 微分 $\frac{d\,\text{loss}}{dw}$ | $w$ を少し動かしたとき loss がどれだけ変わるか |
-| 偏微分 $\frac{\partial\,\text{loss}}{\partial w_i}$ | 他を固定して $w_i$ だけ動かしたときの変化率 |
+| 微分 $\frac{d\thinspace \text{loss}}{dw}$ | $w$ を少し動かしたとき loss がどれだけ変わるか |
+| 偏微分 $\frac{\partial\thinspace \text{loss}}{\partial w_i}$ | 他を固定して $w_i$ だけ動かしたときの変化率 |
 | 勾配 $\nabla\text{loss}$ | 全パラメータの偏微分をまとめたベクトル |
 | 連鎖律 | 合成関数の微分を、各段の微分の積で求める |
 | 勾配降下法 | 勾配の逆方向にパラメータを動かして loss を下げる |
