@@ -45,7 +45,7 @@ GPT 系の Transformer を必要最低限まで削ぎ落としたものです。
 | トークナイザ | 空白分割（単語 = トークン） | BPE / SentencePiece（サブワード） |
 | 語彙 | 10 単語 | 5万〜20万以上のトークン |
 | パラメータ数 | 約 68,000 | 数十億〜数兆 |
-| 訓練データ | 40 単語 | 数兆トークン |
+| 訓練データ | 語彙 10 単語からなる 40 トークン（同じ単語の繰り返しを含む延べ数） | 数兆トークン |
 | 生成 | Greedy（argmax） | Temperature、top-k、top-p によるサンプリング |
 | Dropout / 正則化 | なし | Dropout、weight decay など |
 | **コアアルゴリズム** | **同じ** | **同じ** |
@@ -88,21 +88,23 @@ output: the cat sat on the mat . the dog sat on the log .
 
 ### チュートリアル
 
-| チュートリアル | 内容 | 所要時間 |
-|---|---|---|
-| [Step 1: セットアップと実行](docs/ja/tutorial/01_setup.md) | 環境構築、コードの実行、出力の確認 | 5分 |
-| [Step 2: データを観察する](docs/ja/tutorial/02_explore_data.md) | トークン化・訓練データの中身を自分の目で確認 | 10分 |
-| [Step 3: Transformer の中を覗く](docs/ja/tutorial/03_explore_model.md) | Attention の重み、埋め込みベクトルを可視化 | 15分 |
-| [Step 4: 改造してみる](docs/ja/tutorial/04_experiments.md) | パラメータを変えたり、コーパスを変えて実験 | 15分 |
-| [Step 5: インストラクションチューニングを試す](docs/ja/tutorial/05_instruction.md) | Alpaca 形式の Instruction Tuning を 3 段階で動かし、丸暗記の限界も体感 | 15分 |
+| チュートリアル | 内容 |
+|---|---|
+| [Step 1: セットアップと実行](docs/ja/tutorial/01_setup.md) | 環境構築、コードの実行、出力の確認 |
+| [Step 2: データを観察する](docs/ja/tutorial/02_explore_data.md) | トークン化・訓練データの中身を自分の目で確認 |
+| [Step 3: Transformer の中を覗く](docs/ja/tutorial/03_explore_model.md) | Attention の重み、埋め込みベクトルを可視化 |
+| [Step 4: 改造してみる](docs/ja/tutorial/04_experiments.md) | パラメータを変えたり、コーパスを変えて実験 |
+| [Step 5: インストラクションチューニングを試す](docs/ja/tutorial/05_instruction.md) | Alpaca 形式の Instruction Tuning を 3 段階で動かし、丸暗記の限界も体感 |
 
 ## クレジット
 
 - 企画: t-ishii66
 - アーキテクチャ設計: t-ishii66
-- プログラミング: Claude Opus 4.7, t-ishii66
-- ドキュメント: Claude Opus 4.7, GPT 5.3 Codex, t-ishii66
+- プログラミング: Claude Opus 6, t-ishii66
+- ドキュメント: Claude Opus 6, GPT 5.3 Codex, t-ishii66
 - レビュー: t-ishii66
-- 英訳: Claude Opus 4.7, GPT 5.3 Codex
+- 英語翻訳: Claude Opus 6, GPT 5.3 Codex
+- 発行日: 2026/9/20
+- バージョン: 2.0.0
 
 Copyright(C) 2026 t-ishii66. All rights reserved.

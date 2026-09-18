@@ -17,3 +17,6 @@ venv/
 # Python bytecode cache
 __pycache__/
 *.pyc
+
+# Claude Code local settings (machine-local; shared settings.json stays tracked)
+.claude/settings.local.json
