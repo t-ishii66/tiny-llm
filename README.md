@@ -1,7 +1,8 @@
 ---
 title: "tiny-LLM from scratch — Learn LLMs with a Minimal Transformer"
-description: "tiny-LLM is a minimal Transformer learning project. Understand Self-Attention, QKV, multi-head attention, training, and text generation with about 140 lines of executable code (+ ~100 lines for instruction tuning)."
+description: "tiny-LLM is a minimal Transformer learning project. Understand Self-Attention, QKV, Multi-Head Attention, training, and text generation in about 140 lines of executable code (instruction tuning adds about 100 more)."
 keywords: "tiny-LLM, Transformer, LLM, GPT, Self-Attention, Query Key Value, QKV, Multi-Head Attention, LayerNorm, Residual Connection, PyTorch, machine learning, deep learning, NLP, language model, generative AI, AI tutorial"
+lang: en
 permalink: /
 canonical_url: "https://t-ishii66.github.io/tiny-llm/"
 ---
@@ -14,45 +15,45 @@ canonical_url: "https://t-ishii66.github.io/tiny-llm/"
 
 # tiny-LLM from scratch
 
-A single-file Transformer implementation designed to teach the core algorithms behind large language models — self-attention, Query/Key/Value, multi-head attention, and next-token prediction — in the most concise Python code possible.
+A single-file Transformer implementation for learning, in the most concise Python code possible, the algorithms at the core of large language models (LLMs) like GPT — Self-Attention, Query/Key/Value, Multi-Head Attention, and next-token prediction.
 
-## What This Is
+## About This Project
 
-This project strips a GPT-style Transformer down to its bare essentials. The model body fits in one file (`tiny_llm.py`, ~140 lines of executable code; the instruction tuning covered in Chapter 5 adds ~100 more lines in `tiny_llm_instruct.py`) and trains in seconds on a toy corpus. The forward pass is written by hand; only backpropagation is delegated to PyTorch's autograd.
+This is a GPT-style Transformer pared down to the bare minimum. The model body fits in one file (`tiny_llm.py`, about 140 lines of executable code; the instruction tuning covered in Chapter 5 adds about 100 more lines in `tiny_llm_instruct.py`), and it trains on a toy corpus in a few seconds. The forward pass is written by hand, and only the backward pass is left to PyTorch's autograd.
 
 ```
-"the cat sat on" → Transformer → "the" (predicted next word)
+"the cat sat on" → Transformer → "the" (predicting the next word)
 ```
 
-## What You'll Learn
+## What You Can Learn
 
-- **Embedding**: how words become vectors
-- **Positional Embedding (learned)**: how position information is injected
-- **Self-Attention (Q, K, V)**: how tokens attend to each other
-- **Multi-Head Attention**: how multiple attention patterns work in parallel
+- **Embedding**: how words are converted into vectors
+- **Positional Embedding (learned)**: how position information is embedded
+- **Self-Attention (Q, K, V)**: how tokens direct attention at each other
+- **Multi-Head Attention**: how multiple attention patterns are run in parallel
 - **Causal Masking**: how future tokens are hidden during training
-- **Feed-Forward Network**: how each token is individually transformed
-- **Residual Connections & Layer Norm**: how deep networks stay trainable
+- **Feed-Forward Network**: how each token is transformed individually
+- **Residual Connections and Layer Norm**: how deep networks are made trainable
 - **Training with Cross-Entropy Loss**: how the model learns to predict the next word
-- **Text Generation**: how trained models produce text one token at a time
+- **Text Generation**: how a trained model generates text one token at a time
 
 ## Simplifications
 
-This is a learning tool, not a production model. Key simplifications include:
+This is a learning tool, not a production-grade model. The main simplifications are as follows.
 
 | Aspect | tiny-LLM | Production LLMs |
 |--------|----------|-----------------|
-| Tokenizer | Whitespace split (word = token) | BPE / SentencePiece (subword) |
-| Vocabulary | 10 words | 50,000–200,000+ tokens |
-| Parameters | ~68,000 | Billions to trillions |
-| Training data | 40 words | Trillions of tokens |
-| Generation | Greedy (argmax) | Sampling with temperature, top-k, top-p |
-| Dropout / regularization | None | Dropout, weight decay, etc. |
-| **Core algorithm** | **Same** | **Same** |
+| Tokenizer | whitespace split (word = token) | BPE / SentencePiece (subword) |
+| Vocabulary | 10 words | 50,000 to 200,000+ tokens |
+| Number of parameters | about 68,000 | billions to trillions |
+| Training data | 40 tokens drawn from a 10-word vocabulary (a total count including repeats of the same word) | trillions of tokens |
+| Generation | Greedy (argmax) | sampling with temperature, top-k, top-p |
+| Dropout / regularization | none | Dropout, weight decay, etc. |
+| **Core algorithm** | **the same** | **the same** |
 
 ## Why It's Still Useful
 
-Even with these simplifications, the core algorithms implemented here are the same ones used in GPT, LLaMA, and other state-of-the-art models. The differences are primarily about scale, while the foundational structure is shared. Understanding this code gives you a solid foundation for reading real-world Transformer implementations, because every concept here — Q/K/V projections, scaled dot-product attention, causal masks, residual connections, layer normalization, and autoregressive generation — carries over directly.
+Even with all these simplifications, the core algorithms implemented here are used as-is in state-of-the-art models such as GPT and LLaMA. The difference is mainly one of scale, while the underlying structure is shared. Once you understand this code, Q/K/V projections, Scaled Dot-Product Attention, the Causal Mask, Residual Connections, Layer Normalization, and autoregressive generation — all of these carry over directly to practical Transformer implementations, so it becomes a foundation for reading real-world code.
 
 ## Quick Start
 
@@ -60,9 +61,9 @@ Even with these simplifications, the core algorithms implemented here are the sa
 uv run --with torch tiny_llm.py
 ```
 
-If you don't have uv installed yet, see the install steps in [Tutorial Step 1](docs/en/tutorial/01_setup.md).
+If you don't have uv installed, see the installation instructions in [Tutorial Step 1](docs/en/tutorial/01_setup.md).
 
-Running the script displays the training progress and generation results (exact numbers may vary between runs):
+Running the script displays the training progress and the generation results (the numbers vary slightly from run to run).
 
 ```
 epoch   20  loss=1.9469
@@ -79,30 +80,32 @@ output: the cat sat on the mat . the dog sat on the log .
 
 | Document | Content |
 |---|---|
-| [Chapter 1: Data Preparation](docs/en/01_data.md) | Vocabulary, tokenization, and training data construction |
-| [Chapter 2: Transformer](docs/en/02_transformer.md) | Embedding, self-attention, FFN, and the full forward pass |
-| [Chapter 3: Training](docs/en/03_training.md) | Loss function, backpropagation, and parameter updates |
-| [Chapter 3 Supplement: Gradient Math](docs/en/03a_gradient.md) | Derivatives, partial derivatives, and chain rule with concrete examples |
-| [Chapter 4: Generation](docs/en/04_generation.md) | Next-word prediction, greedy decoding, and comparison with real LLMs |
-| [Chapter 5: Instruction Tuning](docs/en/05_instruction_tuning.md) | Alpaca format, response masking, and building an instruction-following LLM |
+| [Chapter 1: Data Preparation](docs/en/01_data.md) | Building the vocabulary, tokenization, and how to make training data |
+| [Chapter 2: Transformer](docs/en/02_transformer.md) | Embedding, Self-Attention, FFN, and the whole Forward Pass |
+| [Chapter 3: Training](docs/en/03_training.md) | Cross-Entropy Loss, backpropagation, and parameter updates |
+| [Chapter 3 Supplement: Gradient Math](docs/en/03a_gradient.md) | Derivatives, partial derivatives, and the chain rule explained with concrete numbers |
+| [Chapter 4: Text Generation](docs/en/04_generation.md) | Next-word prediction, Greedy Decoding, and comparison with real LLMs |
+| [Chapter 5: Instruction Tuning](docs/en/05_instruction_tuning.md) | Alpaca format, Response masking, and how to build an instruction-following LLM |
 
 ### Tutorial
 
-| Tutorial | Content | Time |
-|---|---|---|
-| [Step 1: Setup and Run](docs/en/tutorial/01_setup.md) | Environment setup, running the code, checking the output | 5 min |
-| [Step 2: Exploring the Data](docs/en/tutorial/02_explore_data.md) | Examine tokenization and training data with your own eyes | 10 min |
-| [Step 3: Peeking Inside the Transformer](docs/en/tutorial/03_explore_model.md) | Visualize attention weights and embedding vectors | 15 min |
-| [Step 4: Experiments and Modifications](docs/en/tutorial/04_experiments.md) | Change parameters, modify the corpus, and experiment | 15 min |
-| [Step 5: Try Instruction Tuning](docs/en/tutorial/05_instruction.md) | Run the 3-stage Alpaca-style instruction tuning pipeline and see the limits of memorization | 15 min |
+| Tutorial | Content |
+|---|---|
+| [Step 1: Setup and Running](docs/en/tutorial/01_setup.md) | Setting up the environment, running the code, checking the output |
+| [Step 2: Exploring the Data](docs/en/tutorial/02_explore_data.md) | Check tokenization and the contents of the training data with your own eyes |
+| [Step 3: Peeking Inside the Transformer](docs/en/tutorial/03_explore_model.md) | Visualize the attention weights and embedding vectors |
+| [Step 4: Experiments and Modifications](docs/en/tutorial/04_experiments.md) | Experiment by changing parameters and changing the corpus |
+| [Step 5: Try Instruction Tuning](docs/en/tutorial/05_instruction.md) | Run Alpaca-style Instruction Tuning in 3 stages and feel the limits of rote memorization |
 
 ## Credits
 
 - Project Planning: t-ishii66
 - Architecture Design: t-ishii66
-- Programming: Claude Opus 4.7, t-ishii66
-- Document: Claude Opus 4.7, GPT 5.3 Codex, t-ishii66
+- Programming: Claude Opus 6, t-ishii66
+- Documentation: Claude Opus 6, GPT 5.3 Codex, t-ishii66
 - Review: t-ishii66
-- English translation: Claude Opus 4.7, GPT 5.3 Codex
+- English translation: Claude Opus 6, GPT 5.3 Codex
+- Release date: 2026/9/19
+- Version: 2.0.0
 
 Copyright(C) 2026 t-ishii66. All rights reserved.

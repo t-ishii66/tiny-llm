@@ -2,55 +2,55 @@
 
 ![Try Instruction Tuning](../../images/tutorial-05-instruction.png)
 
-Let's actually run the Alpaca-format Instruction Tuning we saw in Chapter 5 (main text) and experience it firsthand.
-We'll observe how a pretrained model learns 4 instruction-response pairs and acquires "respond to an instruction" behavior.
-However, we'll also see with our own eyes that the result is "rote memorization" and that there is no generalization like a real LLM.
+Let's actually run the Alpaca-style Instruction Tuning we saw in Chapter 5 (the main text) and get a feel for it.
+We observe a pretrained model learning 4 instruction × response pairs until it acquires "instruction-following" behavior.
+At the same time, we confirm with our own eyes that the result is "rote memorization" and that there is no generalization like that of a real LLM.
 
-> Starting from Step 5, the code file we work with changes. We run `tiny_llm_instruct.py` instead of `tiny_llm.py`
-> (it's a separate file that imports `tiny_llm.py` and adds the instruction-tuning logic on top).
+> From Step 5 the code file we work with changes. We run `tiny_llm_instruct.py` rather than `tiny_llm.py`
+> (the contents are a separate file that imports `tiny_llm.py` and adds the processing for instruction tuning).
 
 ---
 
-## 5.1 Run It
+## 5.1 Running It
 
 ```bash
 uv run --with torch tiny_llm_instruct.py
 ```
 
-Three Stages run in sequence.
+Three Stages run in order.
 
 ```
---- Stage 1: Pretraining ---        ← Regular language model training (200 epochs)
+--- Stage 1: Pretraining ---        ← ordinary language model training (200 epochs)
 epoch   20  loss=...
 ...
 epoch  200  loss=...
 
---- Stage 2: Instruction tuning --- ← Fine-tune with Response masking (300 epochs)
+--- Stage 2: Instruction tuning --- ← fine-tuning with a Response mask (300 epochs)
 epoch   30  loss=...
 ...
 epoch  300  loss=...
 
---- Stage 3: Responding ---         ← Response generation after training
+--- Stage 3: Responding ---         ← response generation after training
 ### Instruction: who sat on the mat
-### Response: (will be checked in 5.2 — don't look yet)
+### Response: (we'll check this in §5.2 — don't look yet)
 
 ### Instruction: who saw the dog
-### Response: (will be checked in 5.2 — don't look yet)
+### Response: (we'll check this in §5.2 — don't look yet)
 
 ### Instruction: who sat on the log
-### Response: (will be checked in 5.2 — don't look yet)
+### Response: (we'll check this in §5.2 — don't look yet)
 ```
 
-Confirm that the loss is clearly dropping in both Stage 1 and Stage 2.
-The Stage 1 and Stage 2 losses use different loss functions (all positions / response positions only), so comparing the absolute values is meaningless. Just check **whether each one is dropping all the way down**.
+Please confirm that the loss comes down solidly in both Stage 1 and Stage 2.
+The losses of Stage 1 and Stage 2 use different loss functions (all positions / response positions only), so comparing their absolute values is meaningless. It's enough to look only at **whether each of them has come all the way down**.
 
-(For the actual responses in Stage 3, first predict them in 5.2, then check against the answer.)
+(For Stage 3's actual responses, we'll first predict them in §5.2 and then check the answers.)
 
 ---
 
-## 5.2 Predict the Output Before Checking
+## 5.2 Predict the Output, Then Check It
 
-Looking at the `examples` list in `tiny_llm_instruct.py`, the training data is just these 4:
+Looking at the `examples` list in `tiny_llm_instruct.py`, the training data is only these 4 examples:
 
 ```python
 examples = [
@@ -61,7 +61,7 @@ examples = [
 ]
 ```
 
-In Stage 3, the model produces responses for 3 instructions. **Predict them yourself before running**, then compare against the output.
+In Stage 3 the model produces responses for 3 instructions. **Predict them yourself before running**, then check against the output.
 
 | Instruction | Your prediction | Actual output |
 |---|---|---|
@@ -69,13 +69,13 @@ In Stage 3, the model produces responses for 3 instructions. **Predict them your
 | `who saw the dog` | ? | ? |
 | `who sat on the log` | ? | ? |
 
-Since the training has fully memorized them, all 3 should return the responses exactly as in the training data.
+Since it has completely memorized them in training, all 3 should come back with the responses exactly as in the training data.
 
 ---
 
-## 5.3 Add a New Instruction Example
+## 5.3 Adding a New Instruction Example
 
-Let's add one more example to the `examples` list in `tiny_llm_instruct.py`:
+Let's add one example to the `examples` list in `tiny_llm_instruct.py`:
 
 ```python
 examples = [
@@ -87,7 +87,7 @@ examples = [
 ]
 ```
 
-Add a matching one to the Stage 3 test instructions:
+Add the corresponding one to the Stage 3 test instructions as well:
 
 ```python
 for ins in [
@@ -104,43 +104,43 @@ Re-run:
 uv run --with torch tiny_llm_instruct.py
 ```
 
-If the 5th example is also memorized and `who saw the mat` returns `the dog`, you've succeeded.
-You've confirmed that adding just 1 example is enough for the model to learn a new instruction-response pattern.
+If the 5th example is also memorized and `the dog` comes back for `who saw the mat`, you've succeeded.
+We've confirmed that adding just one example lets the model memorize a new instruction × response pattern.
 
-> As mentioned in Step 1.4, if you put **words not in the corpus** into the added instruction or response, you'll get a `KeyError`.
-> Combine words within the existing vocabulary (`the`, `cat`, `sat`, `on`, `mat`, `.`, `dog`, `log`, `saw`, `who`).
+> As mentioned in Step 1.4, putting **a word not in the corpus** into an instruction or response you add results in a `KeyError`.
+> Please combine within the range of the existing vocabulary (`the`, `cat`, `sat`, `on`, `mat`, `.`, `dog`, `log`, `saw`, `who`).
 
 ---
 
-## 5.4 Try OOD Instructions — See the Limits of Memorization
+## 5.4 Trying OOD Instructions — Seeing the Limits of Rote Memorization
 
-Let's try instructions not in the training data and see how the model behaves.
+Let's try instructions that aren't in the training data and see how the model behaves.
 
-**Revert** the line you added in 5.3 so `examples` goes back to the original 4 lines, and only change the Stage 3 test instructions:
+**Revert** the line you added in §5.3, returning `examples` to its original 4 lines, then change only the Stage 3 test instructions:
 
 ```python
 for ins in [
-    "who sat on the cat",    # ← instruction not in training (vocabulary is all known)
-    "who saw the log",       # ← instruction not in training
-    "who sat on the dog",    # ← instruction not in training
+    "who sat on the cat",    # ← an instruction not in training (all vocabulary is known)
+    "who saw the log",       # ← an instruction not in training
+    "who sat on the dog",    # ← an instruction not in training
 ]:
 ```
 
-Re-run and observe what responses come out. Common patterns:
+Re-run and observe what responses come out. Commonly seen patterns:
 
-- **Parrots** a response from an existing training example (e.g. they all become `the cat`)
-- Strongly pulled toward the response of the most recently trained example
+- It **parrots back** the response of an existing training example (e.g. everything becomes `the cat`)
+- It is strongly pulled toward the response of the last training example it learned
 - A meaningless word sequence comes out
 
-Since it has only learned 4 training examples, it **cannot meaningfully generalize** to unknown instructions. This is a limit of tiny-LLM's size and training amount, and it's the moment when you can **feel firsthand the message that "this is a rote-memorization model."**
+Since it has learned only the 4 training examples, **it cannot generalize meaningfully** to unknown instructions. This is a limit of tiny-LLM's size and amount of training, and it's the moment where you can **feel the message that "this is a rote-memorization model"**.
 
 ---
 
-## 5.5 Reduce the Instruction Tuning Epoch Count
+## 5.5 Reducing the Number of Instruction Tuning Epochs
 
-Finally, let's observe "how much rote memorization is needed before it can respond."
+Finally, let's observe "how much rote memorization it takes before it can respond".
 
-Change the line in the `if __name__ == "__main__":` block where Stage 2 calls `train_instruct`:
+Change the line that calls `train_instruct` in Stage 2 of the `if __name__ == "__main__":` block:
 
 ```python
 # --- Stage 2: Instruction tuning ---
@@ -151,21 +151,21 @@ train_instruct(model, examples, vocab, epochs=30)   # ← change to 30, 50, 100,
 
 | epochs | Expected behavior |
 |---|---|
-| 300 (original) | All 3 examples respond correctly (memorization complete) |
-| 100 | Mostly correct, but occasionally breaks down |
-| 50 | Only about half are remembered |
-| 10 | Almost no learning has happened; output breaks down |
+| 300 (original) | correct responses for all 3 examples (memorization complete) |
+| 100 | mostly correct, but occasionally falls apart |
+| 50 | has memorized only about half |
+| 10 | has barely learned anything; the output falls apart |
 
-With low epoch counts, you can observe the intermediate state of "the format is produced but the response content is off."
-Watching the loss convergence curve as well, get a feel for how much compute instruction tuning takes to complete.
+With few epochs you can observe the intermediate state where "it produces the format, but the response content is odd".
+While also watching the loss convergence curve, get a feel for how much computation instruction tuning takes to complete.
 
 ---
 
-## 5.6 (Optional) Design a Different Task with the Same Vocabulary
+## 5.6 (Optional) Designing a Different Task with the Same Vocabulary
 
-An exercise in coming up with your own `(instruction, response)` pairs combining only the existing vocabulary (`the cat sat on mat . dog log saw who`).
+This is an exercise in devising your own `(instruction, response)` pairs using only combinations of the existing vocabulary (`the cat sat on mat . dog log saw who`).
 
-Example:
+For example:
 
 ```python
 examples = [
@@ -176,29 +176,29 @@ examples = [
 ]
 ```
 
-However, the above example contains the previously-unseen words `what`, `did`, `where`, so as-is it will produce a `KeyError`. To get this through, you'll need to choose between either adding "`what did where`" to the end of the corpus as dummy occurrences to register them in the vocabulary, or composing the instructions only from words within the vocabulary.
+However, the example above contains the words `what`, `did`, and `where`, which have never appeared, so as-is it results in a `KeyError`. To get it through, the choice is either to add "`what did where`" as dummy occurrences at the end of the corpus so they get registered in the vocabulary, or to build the instructions using only words within the vocabulary.
 
-> Once you adopt the perspective of **"designing the training data yourself"**, you can feel for yourself what people mean in real instruction tuning when they say
-> "the quality and diversity of the dataset determines the result."
+> Once you take on the perspective of "**designing the training data yourself**", you get a real feel for what it means when
+> people say of real instruction tuning that "the quality and diversity of the dataset determine the result".
 
-If you have time, build your own examples list, train, and see how much can be rote-memorized.
+If you have time to spare, try creating your own examples list, training on it, and seeing how well it can memorize.
 
 ---
 
-## Summary — Reviewing the Entire Tutorial
+## Summary — Looking Back Over the Whole Tutorial
 
-Across the 5 Steps, you experienced the following **by hand**:
+Through the 5 Steps, you experienced the following **hands-on**:
 
-1. **Step 1**: Confirmed that `uv run` one-shot runs training and generation through to completion
-2. **Step 2**: Observed the sliding-window structure of tokenization and training data as tensors
-3. **Step 3**: Pulled out Embeddings and Attention weights and confirmed the model operates on "numerical tensors"
-4. **Step 4**: Changed hyperparameters and structure (Weight Tying, Temperature) and measured the impact on loss and generation
-5. **Step 5**: Ran the 3 stages pretrain → instruction tuning → response and saw that Response masking creates the "follow an instruction" behavior. At the same time, felt firsthand the "limits of rote memorization"
+1. **Step 1**: confirmed that a single `uv run` gets training and generation running
+2. **Step 2**: observed tokenization and the sliding-window structure of the training data as tensors
+3. **Step 3**: pulled out the Embedding and Attention weights and confirmed that the model runs on "numeric tensors"
+4. **Step 4**: changed hyperparameters and structure (Weight Tying, Temperature) and measured the effect on loss and generation
+5. **Step 5**: ran the 3 stages of pretrain → instruction tuning → responding and saw that Response masking creates "instruction-following" behavior. At the same time, you felt "the limits of rote memorization"
 
-The result was rote memorization, but the takeaway of this tutorial is that you assembled the procedure itself ("delimit with format + loss only on the response") with your own hands.
+The result was rote memorization, but the takeaway of this tutorial is that you assembled the procedure itself ("delimit with a format + loss on the response only") with your own hands.
 
 This is the end of the tiny-LLM tutorial.
-Going back to the main documentation and re-reading each chapter, you should be able to understand the math and architecture behind the behavior you ran here at a deeper level.
+If you go back to the main documentation and reread each chapter, you should understand the mathematics and architecture behind the behavior you ran here much more deeply.
 
-- [Documentation top](../01_data.md)
+- [The start of the documentation](../01_data.md)
 - [Chapter 5 main text (Instruction Tuning)](../05_instruction_tuning.md)

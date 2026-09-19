@@ -104,7 +104,7 @@ output: the cat sat on the mat . the dog sat on the log .
 - ドキュメント: Claude Opus 6, GPT 5.3 Codex, t-ishii66
 - レビュー: t-ishii66
 - 英語翻訳: Claude Opus 6, GPT 5.3 Codex
-- 発行日: 2026/9/20
+- 発行日: 2026/9/19
 - バージョン: 2.0.0
 
 Copyright(C) 2026 t-ishii66. All rights reserved.

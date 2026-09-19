@@ -3,9 +3,9 @@
 ![Peeking Inside the Transformer](../../images/tutorial-03-explore-model.png)
 
 Let's actually observe the internals of the trained model.
-We'll check what values the embedding vectors and attention weights actually take.
+We'll check what values the Embedding vectors and Attention weights actually take.
 
-We'll continue working in interactive mode with `uv run --with torch python -i tiny_llm.py`.
+We continue working in the interactive mode of `uv run --with torch python -i tiny_llm.py`.
 
 ---
 
@@ -17,13 +17,13 @@ We'll continue working in interactive mode with `uv run --with torch python -i t
 Total parameters: 67968
 ```
 
-Approximately 68,000 parameters (mainly weight matrices) were tuned over 200 training iterations.
+About 68,000 parameters (mostly weight matrices) were adjusted over 200 rounds of training.
 
 ---
 
-## 3.2 Observing Embedding Vectors
+## 3.2 Observing the Embedding Vectors
 
-Each word is represented as a 64-dimensional vector:
+Each word is represented by a 64-dimensional vector:
 
 ```python
 >>> model.tok_emb.shape
@@ -37,10 +37,10 @@ Let's look at the first 10 elements of the vector for "cat" (number 2):
 tensor([-0.05,  0.13,  0.27, ...], requires_grad=True)
 ```
 
-The numbers are learned from random initialization with each training run, so they vary every time you run it.
+The numbers are learned from a random initialization on each training run, so they change every time you run it.
 
-Through training, words with similar roles should have similar vectors.
-Let's verify using cosine similarity:
+Through training, words with similar roles should have ended up with similar vectors.
+Let's check with cosine similarity:
 
 ```python
 >>> import torch.nn.functional as F
@@ -50,15 +50,15 @@ Let's verify using cosine similarity:
 ...     v2 = model.tok_emb[vocab[word2]]
 ...     return F.cosine_similarity(v1.unsqueeze(0), v2.unsqueeze(0)).item()
 ...
->>> similarity("cat", "dog")    # Used in similar contexts
->>> similarity("cat", ".")      # Completely different roles
->>> similarity("mat", "log")    # Both come after "sat on the ___"
+>>> similarity("cat", "dog")    # used in similar contexts
+>>> similarity("cat", ".")      # completely different roles
+>>> similarity("mat", "log")    # both come after "sat on the ___"
 ```
 
 <details>
-<summary>Copy-paste version (no prompt markers)</summary>
+<summary>For copy-paste (without prompt markers)</summary>
 
-Raw code with `>>>` / `...` stripped. **Paste directly** into interactive mode.
+The raw code with `>>>` / `...` removed. It **can be pasted directly** into interactive mode.
 
 ```python
 import torch.nn.functional as F
@@ -68,23 +68,23 @@ def similarity(word1, word2):
     v2 = model.tok_emb[vocab[word2]]
     return F.cosine_similarity(v1.unsqueeze(0), v2.unsqueeze(0)).item()
 
-similarity("cat", "dog")    # Used in similar contexts
-similarity("cat", ".")      # Completely different roles
-similarity("mat", "log")    # Both come after "sat on the ___"
+similarity("cat", "dog")    # used in similar contexts
+similarity("cat", ".")      # completely different roles
+similarity("mat", "log")    # both come after "sat on the ___"
 ```
 
 </details>
 
 If the similarity between "cat" and "dog" is high and the similarity between "cat" and "." is low,
-it shows that the model has learned (to a small extent) the semantic relationships between words.
+it shows that the model has learned (if only a little) the semantic relationships between words.
 
 ---
 
-## 3.3 Peeking at Attention Weights
+## 3.3 Peeking at the Attention Weights
 
-The core of the Transformer is the **Attention weight matrix** that expresses "which tokens are attending to which positions." Let's pull out the attention weights of the first layer and take a look.
+The core of the Transformer is the **Attention weight matrix**, which expresses "which token is attending to where". Let's pull out the attention weights of layer 1 and have a look.
 
-The details of the computation are covered thoroughly in [Chapter 2: Self-Attention](../02_transformer.md) of the main text, so here let's focus on **seeing the results**. Paste the following helper into interactive mode:
+The details of the computation are explained at length in the main text, [Chapter 2: Self-Attention](../02_transformer.md), so here we concentrate on **looking at the results**. Paste the following helper into interactive mode:
 
 ```python
 >>> import math
@@ -102,9 +102,9 @@ The details of the computation are covered thoroughly in [Chapter 2: Self-Attent
 ```
 
 <details>
-<summary>Copy-paste version (no prompt markers)</summary>
+<summary>For copy-paste (without prompt markers)</summary>
 
-Raw code with `>>>` / `...` stripped. **Paste directly** into interactive mode.
+The raw code with `>>>` / `...` removed. It **can be pasted directly** into interactive mode.
 
 ```python
 import math
@@ -123,38 +123,38 @@ def attn_layer0(text):
 
 </details>
 
-Let's try running it:
+Let's run it:
 
 ```python
 >>> attn = attn_layer0("the cat sat on the mat")
 >>> print(attn.detach().round(decimals=2))
 ```
 
-A 6×6 attention weight matrix is displayed. Each row shows "which positions that position is attending to":
+A 6×6 attention weight matrix is displayed. Each row shows "where that position is attending to":
 
 ```
-Row 0 (the): [1.00, 0.00, 0.00, 0.00, 0.00, 0.00]   ← Can only see itself
-Row 1 (cat): [0.??, 0.??, 0.00, 0.00, 0.00, 0.00]   ← Can see "the" and "cat"
-Row 2 (sat): [0.??, 0.??, 0.??, 0.00, 0.00, 0.00]
+row 0 (the): [1.00, 0.00, 0.00, 0.00, 0.00, 0.00]   ← can only see itself
+row 1 (cat): [0.??, 0.??, 0.00, 0.00, 0.00, 0.00]   ← can see the and cat
+row 2 (sat): [0.??, 0.??, 0.??, 0.00, 0.00, 0.00]
 ...
 ```
 
-**The upper-right triangle being 0 is the effect of the causal mask** — the mechanism that "forbids looking at future tokens" can be confirmed here as concrete numbers.
+**The fact that the upper-right triangle is 0 is the effect of the causal mask** — the mechanism that "forbids looking at future tokens" can be confirmed numerically, just like this.
 
-> If you want to see the differences across multi-head (4 heads), split the helper's `Q`, `K` into 4 heads and run the same computation. The procedure is in the main text [§2 Multi-Head Attention](../02_transformer.md).
+> If you want to see the differences between the multi-heads (4 heads), try splitting the helper's `Q` and `K` into 4 heads and running the same computation. The procedure is in the main text, [§2 Multi-Head Attention](../02_transformer.md).
 
 ---
 
-## 3.4 (Optional) Drawing Attention as a Heatmap
+## 3.4 (Optional) Drawing the Attention as a Heatmap
 
-Visualizing is easier to grasp than a table of numbers, so if you have matplotlib, let's visualize it.
+Seeing it with your eyes is easier than a table of numbers, so if you have matplotlib, let's visualize it.
 
 ```bash
-# First start interactive mode with matplotlib installed
+# first start interactive mode with matplotlib installed
 uv run --with torch --with matplotlib python -i tiny_llm.py
 ```
 
-After re-pasting the helper `attn_layer0` from 3.3:
+After pasting the helper `attn_layer0` from §3.3 again:
 
 ```python
 >>> import matplotlib.pyplot as plt
@@ -171,9 +171,9 @@ After re-pasting the helper `attn_layer0` from 3.3:
 ```
 
 <details>
-<summary>Copy-paste version (no prompt markers)</summary>
+<summary>For copy-paste (without prompt markers)</summary>
 
-Raw code with `>>>` stripped. **Paste directly** into interactive mode.
+The raw code with `>>>` removed. It **can be pasted directly** into interactive mode.
 
 ```python
 import matplotlib.pyplot as plt
@@ -191,15 +191,15 @@ plt.tight_layout(); plt.show()
 
 </details>
 
-You should see a pattern where only the lower triangle is colored (the upper-right causal mask region is white) and the area near the diagonal is dark.
-Drawing and comparing the different attention patterns for each head gives an intuitive sense of why Multi-Head Attention matters.
+You should see a pattern where only the lower triangle is colored (the upper-right causal mask part is white) and the area near the diagonal is dark.
+Drawing and comparing the different attention patterns per head gives you an intuitive feel for the significance of Multi-Head Attention.
 
 ---
 
-## 3.5 Tracing the Generation Process Step by Step
+## 3.5 Following the Generation Process One Step at a Time
 
 ```python
->>> # Predict the next word from "the cat sat on"
+>>> # predict the next word from "the cat sat on"
 >>> prompt = "the cat sat on"
 >>> tokens = tokenize(prompt, vocab)
 >>> print(tokens)
@@ -208,20 +208,20 @@ Drawing and comparing the different attention patterns for each head gives an in
 >>> # Forward pass
 >>> x = torch.tensor([tokens])
 >>> logits = model.forward(x)          # (1, 4, 10)
->>> next_logit = logits[0, -1, :]      # Scores at the last position
+>>> next_logit = logits[0, -1, :]      # the scores at the last position
 
->>> # Display scores for each word
+>>> # display the score of each word
 >>> for i, score in enumerate(next_logit.tolist()):
 ...     print(f"  {id2word[i]:>5s}: {score:.3f}")
 ```
 
 <details>
-<summary>Copy-paste version (no prompt markers)</summary>
+<summary>For copy-paste (without prompt markers)</summary>
 
-Raw code with `>>>` / `...` stripped. **Paste directly** into interactive mode.
+The raw code with `>>>` / `...` removed. It **can be pasted directly** into interactive mode.
 
 ```python
-# Predict the next word from "the cat sat on"
+# predict the next word from "the cat sat on"
 prompt = "the cat sat on"
 tokens = tokenize(prompt, vocab)
 print(tokens)
@@ -229,34 +229,34 @@ print(tokens)
 # Forward pass
 x = torch.tensor([tokens])
 logits = model.forward(x)          # (1, 4, 10)
-next_logit = logits[0, -1, :]      # Scores at the last position
+next_logit = logits[0, -1, :]      # the scores at the last position
 
-# Display scores for each word
+# display the score of each word
 for i, score in enumerate(next_logit.tolist()):
     print(f"  {id2word[i]:>5s}: {score:.3f}")
 ```
 
 </details>
 
-The word with the highest score is selected by `argmax`:
+The word with the highest score is chosen by `argmax`:
 
 ```python
 >>> next_id = torch.argmax(next_logit).item()
 >>> print(f"predicted: {id2word[next_id]}")
 ```
 
-"the" should be predicted as the next word after "the cat sat on"
+"the" should be predicted after "the cat sat on"
 (because the corpus contains "the cat sat on the mat").
 
 ---
 
-## 3.6 Key Takeaways So Far
+## 3.6 Key Points So Far
 
-- **Embedding**: Through training, words in similar contexts get similar vectors
-- **Attention weight matrix**: Becomes triangular due to the causal mask. Each head shows different patterns
-- **Generation**: Scores are produced for all words, and the word with the highest score becomes the next prediction
-- Everything can be inspected as **numerical tensors** — it's not a black box
+- **Embedding**: through training, words in similar contexts end up with similar vectors
+- **Attention weight matrix**: becomes a triangular matrix thanks to the causal mask. Each head has a different pattern
+- **Generation**: scores for all words come out, and the word with the highest score becomes the next prediction
+- Everything can be inspected as **numeric tensors** — it is not a black box
 
 ---
 
-Next: [Step 4: Modifying the Code](04_experiments.md)
+Next: [Step 4: Experiments and Modifications](04_experiments.md)

@@ -2,66 +2,66 @@
 
 ![Text Generation](../images/chapter-04-generation.png)
 
-Training is complete. All of the model's parameters have been
-tuned to "correctly predict the next word."
+Training is finished. All of the model's parameters have been adjusted
+so that it "can correctly predict the next word".
 
-In this chapter, we look at how the trained model **generates new text**.
-This is where the essence of LLMs lies.
-
----
-
-## 4.1 The Essence of LLMs: Next-Word Prediction
-
-ChatGPT and GPT-4 are fundamentally doing the same thing:
-
-> **"Given a sequence of words so far, predict the word that comes next."**
-
-Just by repeating this, text is generated.
-
-```
-Input:  "the cat"
-Prediction:  "sat"        ← Predict the next single word
-
-Input:  "the cat sat"
-Prediction:  "on"         ← Predict the next single word again
-
-Input:  "the cat sat on"
-Prediction:  "the"        ← Predict yet another next word
-
-...repeat this process
-```
+In this chapter we look at the mechanism for **generating new text** using the trained model.
+This is where the essence of an LLM lies.
 
 ---
 
-## 4.2 Code — The `generate` Function
+## 4.1 The Essence of an LLM: Predicting the Next Word
+
+ChatGPT and GPT-4 are, fundamentally, doing the same thing:
+
+> **"Given the sequence of words so far, predict the word that comes next"**
+
+Just by repeating this, text gets generated.
+
+```
+input:       "the cat"
+prediction:  "sat"        ← predict the next single word
+
+input:       "the cat sat"
+prediction:  "on"         ← predict the next single word again
+
+input:       "the cat sat on"
+prediction:  "the"        ← predict yet another next single word
+
+...repeat this
+```
+
+---
+
+## 4.2 The Code — The `generate` Function
 
 ```python
 def generate(model, prompt, vocab, id2word, max_tokens=20):
     tokens = tokenize(prompt, vocab)
 
-    with torch.no_grad():                                # No gradient computation during inference
+    with torch.no_grad():                                # no gradient computation needed at inference
         for _ in range(max_tokens):
-            context = tokens[-SEQ_LEN:]                  # Get the last 12 tokens
+            context = tokens[-SEQ_LEN:]                  # take the most recent 12 tokens
             x = torch.tensor([context])                  # (1, T)
             logits = model.forward(x)                    # (1, T, 10)
-            next_logit = logits[0, -1, :]                # Scores at the last position
-            next_id = torch.argmax(next_logit).item()    # Word with the highest score
+            next_logit = logits[0, -1, :]                # scores at the last position
+            next_id = torch.argmax(next_logit).item()    # the word with the highest score
             tokens.append(next_id)
 
     return " ".join(id2word[t] for t in tokens)
 ```
 
 >
-> **Python Tips: `" ".join(...)` — Joining a list into a string**
+> **Python Tips: `" ".join(...)` — joining a list into a string**
 >
-> `" ".join(list)` joins list elements with spaces into a single string:
+> `" ".join(list)` connects the elements of a list with spaces into a single string:
 > ```python
 > words = ["the", "cat", "sat"]
 > " ".join(words)     # → "the cat sat"
 > "-".join(words)     # → "the-cat-sat"
 > ```
-> `id2word[t] for t in tokens` is a **generator expression** that
-> converts each token number to a word while passing them to `join`.
+> `id2word[t] for t in tokens` is a **generator expression**;
+> it converts each token number into a word while passing them to `join`.
 
 ### Step-by-Step Explanation
 
@@ -72,23 +72,29 @@ tokens = tokenize("the cat sat on", vocab)
 # → [1, 2, 3, 4]
 ```
 
-**Step 2: Pass through the Transformer**
+**Step 2: Run it through the Transformer**
 
 ```python
-context = tokens[-SEQ_LEN:]    # [1, 2, 3, 4]  ← Last 12 tokens (only 4 for now)
+context = tokens[-SEQ_LEN:]    # [1, 2, 3, 4]  ← the most recent 12 tokens (only 4 for now)
 x = torch.tensor([context])    # shape: (1, 4)
 logits = model.forward(x)      # shape: (1, 4, 10)
 ```
 
-Predictions are produced at all 4 positions, but we only need the **last position**.
-(The last position = "the prediction after seeing all preceding context")
+The **1** at the head of the shape is the number of batches (sets).
+In training we pushed 28 sets through together, but what we feed in at generation time
+is only the single context we currently have, so the batch size is 1.
+The reason `context` is wrapped one level deep in a list as `torch.tensor([context])`
+is to create this axis for the one set.
+
+Predictions come out at all 4 positions, but the only one we need is **the last position**.
+(The last position = "the prediction made after having seen all the context up to here".)
 
 **Step 3: Choose the next word**
 
 ```python
-next_logit = logits[0, -1, :]   # (10,) ← Scores at the last position
-# Example: [0.1, 2.8, -0.2, 0.1, 0.8, 0.3, -0.3, -0.1, 0.4, 0.0]
-#           pad   the   cat  sat   on   mat    .   dog   log  saw
+next_logit = logits[0, -1, :]   # (10,) ← the scores at the last position
+# e.g.: [0.1, 2.8, -0.2, 0.1, 0.8, 0.3, -0.3, -0.1, 0.4, 0.0]
+#        pad   the   cat  sat   on   mat    .   dog   log  saw
 
 next_id = torch.argmax(next_logit).item()   # → 1 (= "the")
 ```
@@ -96,90 +102,112 @@ next_id = torch.argmax(next_logit).item()   # → 1 (= "the")
 >
 > **Python Tips: Multi-dimensional tensor indexing `logits[0, -1, :]`**
 >
-> Specify positions along each axis with commas. `-1` means "last", `:` means "all":
+> You specify the position along each axis, separated by commas. `-1` is "the last", `:` is "all of them":
 > ```python
 > x = torch.zeros(3, 4, 10)   # 3 samples × 4 positions × 10 words
 >
-> x[0]         # → shape: (4, 10)   Entire first sample
-> x[0, -1]     # → shape: (10,)     Last position of first sample
-> x[0, -1, :]  # → shape: (10,)     Same (: means "all", so it can be omitted)
-> x[0, -1, 3]  # → scalar           A specific single element
+> x[0]         # → shape: (4, 10)   the whole of the first sample
+> x[0, -1]     # → shape: (10,)     the last position of the first sample
+> x[0, -1, :]  # → shape: (10,)     same as above (: means "all", so it can be omitted)
+> x[0, -1, 3]  # → scalar           one specific element
 > ```
 
 >
-> **Python Tips: `torch.argmax()` — Index of the maximum value**
+> **Python Tips: `torch.argmax()` — the index of the maximum value**
 >
-> Returns the **position (index)** of the largest value in a tensor:
+> It returns the **position (index)** of the largest value in a tensor:
 > ```python
 > scores = torch.tensor([0.1, 0.3, 2.1, -0.5, 0.8])
-> torch.argmax(scores)          # → tensor(2)   ← 2.1 is the max, at position 2
-> torch.argmax(scores).item()   # → 2            ← .item() to get a Python int
+> torch.argmax(scores)          # → tensor(2)   ← 2.1 is the max, and its position is 2
+> torch.argmax(scores).item()   # → 2            ← .item() turns it into a Python int
 > ```
 
-`argmax` returns the index with the highest score.
-→ The next word after "the cat sat on" is predicted as "the" (in the corpus, "the" always follows "on").
+The **0** in `logits[0, -1, :]` points to "the one and only set"
+(unlike the 28 sets during training, there is only one row in here).
+The **-1** is the last position, and the **:** is the scores for the 10 words of the vocabulary.
 
-**Step 4: Append to token sequence and repeat**
+`argmax` returns the index with the highest score.
+→ It predicts that "the" comes after "the cat sat on" (in the corpus, "on" is always followed by "the").
+
+**Step 4: Add the predicted word to the input and do it again**
+
+This is the heart of generation. The `"the"` (word number 1) predicted in Step 3 is
+**appended as-is to the end of the token sequence that was the input**.
 
 ```python
 tokens.append(1)
-# tokens = [1, 2, 3, 4, 1]  ← "the cat sat on the"
-# → Next loop predicts the next word from "the cat sat on the"
+# before: [1, 2, 3, 4]      ← "the cat sat on"       (the original prompt)
+# after:  [1, 2, 3, 4, 1]   ← "the cat sat on the"   (the predicted "the" was added)
 ```
 
-### Generation Flow (Concrete Example)
+Then, on the next loop iteration, these 5 words become the new input.
+From the model's point of view, the answer it just produced comes back as "the context to be read".
+Reading 5 words to predict the 6th, appending that to the end again, and so on —
+by repeating this, the text keeps growing.
 
-```
-"the cat sat on"
-                  → Predict: "the"  → "the cat sat on the"
-                  → Predict: "mat"  → "the cat sat on the mat"
-                  → Predict: "."    → "the cat sat on the mat ."
-                  → Predict: "the"  → "the cat sat on the mat . the"
-                  → Predict: "dog"  → "the cat sat on the mat . the dog"
-                  ...
-```
+"If you append the predicted word to the end of the input, you can do the same thing again",
+mentioned at the end of Chapter 2, is realized by the single line `tokens.append()`.
+
+### The Flow of Generation (A Concrete Example)
+
+The input grows by one word per step.
+The next input is the previous step's input with the predicted word appended.
+
+| Step | Input (the token sequence handed to the model) | Length | Prediction |
+|---|---|---|---|
+| 1 | `the cat sat on` | 4 | `the` |
+| 2 | `the cat sat on the` | 5 | `mat` |
+| 3 | `the cat sat on the mat` | 6 | `.` |
+| 4 | `the cat sat on the mat .` | 7 | `the` |
+| 5 | `the cat sat on the mat . the` | 8 | `dog` |
+| … | (grows by one word per step) | … | … |
+
+Once the length exceeds `SEQ_LEN = 12`, `tokens[-SEQ_LEN:]` makes the words
+**drop out of the context starting from the oldest**, so only the most recent 12 words are ever handed to the model
+(this is the context-length story from Chapter 1).
 
 ---
 
-## 4.3 Limitations of Greedy Decoding
+![Alice and Bob talking while reading a picture book in the shade of a tree](../images/chapter-04-break.png)
 
-This program uses `argmax` (selecting the word with the highest score).
+## 4.3 The Limits of Greedy Decoding
+
+This program uses `argmax` (choosing the word with the highest score).
 This is called **Greedy Decoding**.
 
 ```
-Scores: [0.1, 0.3, -0.2, 0.1, 0.8, 2.1, -0.3, -0.1, 0.4, 0.0]
+scores: [0.1, 0.3, -0.2, 0.1, 0.8, 2.1, -0.3, -0.1, 0.4, 0.0]
 ```
 
-In this example, it always selects the maximum value, **2.1**.
+In this example, the maximum value **2.1** is always chosen.
 
-It's simple, but because it always picks only "the most probable word,"
-it tends to loop the same patterns.
+It is simple, but because it only ever picks "the word with the highest probability",
+it has the drawback of easily looping over the same pattern.
 
-> For this reason, in generation it's common to add diversity using techniques like
-> sampling from the probability distribution (temperature) or choosing from the top
-> k candidates (top-k).
+> For this reason, in generation it is common to introduce diversity with techniques such as
+> sampling from the probability distribution (temperature) or choosing from the top k candidates (top-k).
 
-### How Temperature Works
+### How Does Temperature Work?
 
-Temperature is a coefficient that controls how much the logits are "sharpened/flattened" before sampling.
+Temperature is a coefficient that decides how much to "sharpen / flatten" the logits before sampling.
 
 $$p_i = \text{softmax}\left(\frac{\text{logit}_i}{T}\right)$$
 
-These $p_i$ values are used as the **next-word probabilities**, and one word is selected from
-that distribution to decide the next word (in the case of temperature sampling).
+We use this $p_i$ as the **probability of the next word**, and pick one word from it to decide the next word
+(in the case of temperature sampling).
 
-- `T < 1.0`: distribution becomes sharper (focuses on high-score words) → more deterministic output
-- `T = 1.0`: uses the model's original distribution as-is
-- `T > 1.0`: distribution becomes flatter (more probability mass on lower-score words) → more diverse output
+- `T < 1.0`: the distribution sharpens (concentrating on high-scoring words) → the output is more deterministic
+- `T = 1.0`: use the model's own distribution as-is
+- `T > 1.0`: the distribution flattens (probability goes to low-scoring words too) → the output is more diverse
 
-Intuitively, lowering `T` makes generation more "conservative," while raising `T` makes it more "adventurous."
-As `T` gets very small, behavior approaches `argmax`; as `T` gets very large, behavior approaches near-random choice.
+Intuitively, lowering `T` makes it "cautious" and raising it makes it "adventurous".
+When `T` is extremely small it approaches `argmax`, and when extremely large it approaches near-randomness.
 
-Note: the `generate()` implementation in this file remains Greedy (`argmax`); temperature sampling is not implemented here.
+* The `generate()` implementation in this file remains Greedy (`argmax`); temperature sampling is not implemented.
 
 ---
 
-## 4.4 Examining the Output
+## 4.4 Looking at the Run Results
 
 ```
 prompt: "the cat sat on"
@@ -191,29 +219,29 @@ output: the dog saw the cat . the cat sat on the log .
         the dog sat on the mat . the dog sat
 ```
 
-Natural sentences consistent with the training corpus are generated.
-It may look like the model is just memorizing the corpus —
-and that's actually correct. With only 40 words and 10 vocabulary items, memorization is the optimal solution.
+Natural sentences in line with the training corpus are being generated.
+This looks like it is merely memorizing the corpus by rote — and
+in fact that is exactly right. With only 40 words and a 10-word vocabulary, rote memorization is the optimal solution.
 
 ---
 
-## 4.5 Differences in Scale
+## 4.5 The Difference in Scale
 
-Let's place tiny-LLM and a GPT-4 class model side by side.
+Let's line up tiny-LLM and a GPT-4 class model.
 
 | | tiny-LLM | GPT-4 class |
 |---|---|---|
 | Vocabulary size | 10 | 100,000+ |
 | Embedding dimension | 64 | 12,288+ |
-| Attention heads | 4 | 96+ |
-| Transformer layers | 2 | 96+ |
-| Parameters | ~68,000 | Hundreds of billions to trillions |
-| Training data | 40 words | Trillions of tokens |
-| Training time | Seconds | Months (thousands of GPUs) |
+| Number of attention heads | 4 | 96+ |
+| Number of Transformer layers | 2 | 96+ |
+| Number of parameters | about 68,000 | hundreds of billions to trillions |
+| Training data | 40 tokens | trillions of tokens |
+| Training time | a few seconds | several months (thousands of GPUs) |
 
-When you scale up, **generalization** begins to emerge instead of memorization.
-Being able to predict appropriate next words even for "sentences never seen before,"
-based on learned patterns — that is the power of large language models.
+As you scale up, **generalization** starts to happen instead of rote memorization.
+Being able to predict an appropriate next word from learned patterns even for
+"text it has never seen" — that is the power of large language models.
 
 ---
 
@@ -224,24 +252,24 @@ based on learned patterns — that is the power of large language models.
        ↓
    Transformer (trained)
        ↓
-   Predict "the"
+   predicts "the"
        ↓
 "the cat sat on the"
        ↓
    Transformer
        ↓
-   Predict "mat"
+   predicts "mat"
        ↓
    ...repeat
 ```
 
-**Everything about LLMs comes down to "predicting the next word."**
+**Everything about an LLM boils down to "predicting the next word".**
 
-- Embedding gives words meaning
+- Embedding gives meaning to words
 - Self-Attention understands context
-- Training improves prediction accuracy
-- Generation repeats prediction
+- Training raises the accuracy of the prediction
+- Generation repeats the prediction
 
 tiny-LLM is a small toy, but
-the core of the Transformer that you implemented here — Self-Attention, Q/K/V,
-residual connections, Layer Norm, and "next-word prediction" — is something you assembled with your own hands.
+the core of the Transformer implemented here — Self-Attention, Q/K/V, residual connections,
+Layer Norm, and "predicting the next word" — is something you have assembled with your own hands.
