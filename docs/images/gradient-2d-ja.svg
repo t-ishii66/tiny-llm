@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="520" viewBox="0 0 760 520" role="img" aria-labelledby="t d">
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="600" viewBox="0 0 760 600" role="img" aria-labelledby="t d">
   <title id="t">2変数の損失の等高線と勾配</title>
   <desc id="d">loss(w1,w2)=(w1-3)^2+(w2+1)^2 の等高線。中心 (3, -1) が最小。点 (5, 1) での勾配は右上を向き、更新はその逆向きに進みます。</desc>
   <defs>
@@ -6,36 +6,40 @@
     <marker id="u" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker>
     <style>
       text{font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;fill:#172554;text-anchor:middle}
-      .note{font-size:14px;fill:#475569}
+      .note{font-size:13px;fill:#475569}
     </style>
   </defs>
-  <rect width="760" height="520" rx="24" fill="#f8fafc"/>
-  <text x="380" y="40" font-size="23" font-weight="700">loss(w₁, w₂) = (w₁ − 3)² + (w₂ + 1)² の等高線</text>
-  <ellipse cx="385.0" cy="260.0" rx="91.7" ry="56.7" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.75"/>
-  <text x="476.7" y="254.0" class="note" style="font-size:12px">loss=1</text>
-  <ellipse cx="385.0" cy="260.0" rx="183.3" ry="113.3" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.55"/>
-  <text x="568.3" y="254.0" class="note" style="font-size:12px">loss=4</text>
-  <ellipse cx="385.0" cy="260.0" rx="275.0" ry="170.0" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.4"/>
-  <text x="660.0" y="254.0" class="note" style="font-size:12px">loss=9</text>
-  <ellipse cx="385.0" cy="260.0" rx="366.7" ry="226.7" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.28"/>
-  <text x="751.7" y="254.0" class="note" style="font-size:12px">loss=16</text>
-  <path d="M90 260.0H680 M385.0 450V70" fill="none" stroke="#cbd5e1"/>
-  <circle cx="385.0" cy="260.0" r="7" fill="#16a34a"/>
-  <text x="385.0" y="286.0" class="note" style="fill:#15803d">最小 (3, −1)</text>
-  <circle cx="568.3" cy="146.7" r="7" fill="#1d4ed8"/>
-  <text x="626.3" y="130.7" class="note">現在地 (5, 1)</text>
-  <path d="M568.3 146.7l82.5 -51.0" fill="none" stroke="#dc2626" stroke-width="3.5" marker-end="url(#g)"/>
-  <text x="690.8" y="87.7" class="note" style="fill:#b91c1c">勾配 (+4, +4)<tspan x="690.8" dy="18">loss が増える向き</tspan></text>
-  <path d="M568.3 146.7l-82.5 51.0" fill="none" stroke="#2563eb" stroke-width="3.5" marker-end="url(#u)"/>
-  <text x="475.8" y="227.7" class="note" style="fill:#1d4ed8">更新はこの逆向き<tspan x="475.8" dy="18">(4.6, 0.6) へ</tspan></text>
-  <text x="110.0" y="472" class="note" style="font-size:12px">0</text>
-  <text x="201.7" y="472" class="note" style="font-size:12px">1</text>
-  <text x="293.3" y="472" class="note" style="font-size:12px">2</text>
-  <text x="385.0" y="472" class="note" style="font-size:12px">3</text>
-  <text x="476.7" y="472" class="note" style="font-size:12px">4</text>
-  <text x="568.3" y="472" class="note" style="font-size:12px">5</text>
-  <text x="660.0" y="472" class="note" style="font-size:12px">6</text>
-  <text x="694" y="265.0" class="note">w₁</text>
-  <text x="385.0" y="62" class="note">w₂</text>
-  <text x="380" y="502" class="note">勾配は「最も急に loss が増える向き」。その <tspan font-weight="700">逆</tspan> に進むのが勾配降下法</text>
+  <rect width="760" height="600" rx="24" fill="#f8fafc"/>
+  <text x="380" y="42" font-size="22" font-weight="700">loss(w₁, w₂) = (w₁ − 3)² + (w₂ + 1)² の等高線</text>
+  <path d="M150.0 319.99H610.02 M380.01 89.98000000000002V550.0" fill="none" stroke="#cbd5e1"/>
+  <text x="626.02" y="324.99" class="note">w₁</text>
+  <text x="380.01" y="79.98000000000002" class="note">w₂</text>
+  <circle cx="380" cy="320" r="67" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.85"/>
+  <rect x="401" y="262" width="52" height="18" rx="6" fill="#f8fafc"/>
+  <text x="427" y="276" class="note" style="font-size:12px">loss=1</text>
+  <circle cx="380" cy="320" r="133" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.6"/>
+  <rect x="448" y="215" width="52" height="18" rx="6" fill="#f8fafc"/>
+  <text x="474" y="229" class="note" style="font-size:12px">loss=4</text>
+  <circle cx="380" cy="320" r="200" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.45"/>
+  <rect x="495" y="168" width="52" height="18" rx="6" fill="#f8fafc"/>
+  <text x="521" y="182" class="note" style="font-size:12px">loss=9</text>
+  <text x="180" y="544" class="note" style="font-size:12px">0</text>
+  <text x="247" y="544" class="note" style="font-size:12px">1</text>
+  <text x="313" y="544" class="note" style="font-size:12px">2</text>
+  <text x="380" y="544" class="note" style="font-size:12px">3</text>
+  <text x="447" y="544" class="note" style="font-size:12px">4</text>
+  <text x="513" y="544" class="note" style="font-size:12px">5</text>
+  <text x="580" y="544" class="note" style="font-size:12px">6</text>
+  <circle cx="380" cy="320" r="7" fill="#16a34a"/>
+  <text x="380" y="348" class="note" style="fill:#15803d">最小 (3, −1)</text>
+  <circle cx="513" cy="187" r="7" fill="#1d4ed8"/>
+  <text x="579" y="209" class="note">現在地 (5, 1)</text>
+  <path d="M513 187l60 -60" fill="none" stroke="#dc2626" stroke-width="3.5" marker-end="url(#g)"/>
+  <text x="583" y="99" class="note" style="fill:#b91c1c;font-weight:700">勾配 (+4, +4)</text>
+  <text x="583" y="117" class="note" style="fill:#b91c1c">loss が増える向き</text>
+  <path d="M513 187l-60 60" fill="none" stroke="#2563eb" stroke-width="3.5" marker-end="url(#u)"/>
+  <rect x="355" y="257" width="184" height="42" rx="8" fill="#f8fafc"/>
+  <text x="447" y="273" class="note" style="fill:#1d4ed8;font-weight:700">更新はこの逆向き</text>
+  <text x="447" y="292" class="note" style="fill:#1d4ed8">(4.6, 0.6) へ</text>
+  <text x="380" y="582" class="note">勾配は「最も急に loss が増える向き」。その <tspan font-weight="700">逆</tspan> に進むのが勾配降下法</text>
 </svg>

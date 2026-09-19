@@ -55,7 +55,7 @@ tensor([-0.05,  0.13,  0.27, ...], requires_grad=True)
 >>> similarity("mat", "log")    # どちらも "sat on the ___" の後に来る
 ```
 
-<details>
+<details markdown="1">
 <summary>コピペ用 (プロンプト記号なし)</summary>
 
 `>>>` / `...` を取り除いた生コード。対話モードに**そのまま貼り付け可能**です。
@@ -101,7 +101,7 @@ Transformer の核は「どのトークンがどこに注目しているか」�
 ...
 ```
 
-<details>
+<details markdown="1">
 <summary>コピペ用 (プロンプト記号なし)</summary>
 
 `>>>` / `...` を取り除いた生コード。対話モードに**そのまま貼り付け可能**です。
@@ -170,7 +170,7 @@ uv run --with torch --with matplotlib python -i tiny_llm.py
 >>> plt.tight_layout(); plt.show()
 ```
 
-<details>
+<details markdown="1">
 <summary>コピペ用 (プロンプト記号なし)</summary>
 
 `>>>` を取り除いた生コード。対話モードに**そのまま貼り付け可能**です。
@@ -215,7 +215,7 @@ plt.tight_layout(); plt.show()
 ...     print(f"  {id2word[i]:>5s}: {score:.3f}")
 ```
 
-<details>
+<details markdown="1">
 <summary>コピペ用 (プロンプト記号なし)</summary>
 
 `>>>` / `...` を取り除いた生コード。対話モードに**そのまま貼り付け可能**です。

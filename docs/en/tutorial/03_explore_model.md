@@ -55,7 +55,7 @@ Let's check with cosine similarity:
 >>> similarity("mat", "log")    # both come after "sat on the ___"
 ```
 
-<details>
+<details markdown="1">
 <summary>For copy-paste (without prompt markers)</summary>
 
 The raw code with `>>>` / `...` removed. It **can be pasted directly** into interactive mode.
@@ -101,7 +101,7 @@ The details of the computation are explained at length in the main text, [Chapte
 ...
 ```
 
-<details>
+<details markdown="1">
 <summary>For copy-paste (without prompt markers)</summary>
 
 The raw code with `>>>` / `...` removed. It **can be pasted directly** into interactive mode.
@@ -170,7 +170,7 @@ After pasting the helper `attn_layer0` from §3.3 again:
 >>> plt.tight_layout(); plt.show()
 ```
 
-<details>
+<details markdown="1">
 <summary>For copy-paste (without prompt markers)</summary>
 
 The raw code with `>>>` removed. It **can be pasted directly** into interactive mode.
@@ -215,7 +215,7 @@ Drawing and comparing the different attention patterns per head gives you an int
 ...     print(f"  {id2word[i]:>5s}: {score:.3f}")
 ```
 
-<details>
+<details markdown="1">
 <summary>For copy-paste (without prompt markers)</summary>
 
 The raw code with `>>>` / `...` removed. It **can be pasted directly** into interactive mode.

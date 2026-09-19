@@ -306,7 +306,7 @@ The shape doesn't change — the contents get converted into "for asking", "for 
 
 **Multiplying by a weight matrix to convert into a different representation** like this is called **projection**.
 
-In fact there is one more weight matrix, **$W_o$** (64×64).
+In fact there is one more weight matrix, **`Wo`** (64×64).
 It is not used in computing Q/K/V, but to **integrate the final output** of Attention.
 Its role is to merge the results that were split across Multi-Heads back into one, and it appears in Step 7.
 

@@ -7,7 +7,7 @@ permalink: /
 canonical_url: "https://t-ishii66.github.io/tiny-llm/"
 ---
 
-**English** | [日本語](README-jp.md)
+**English** · [日本語](README-jp.md)
 
 <p>
   <img src="docs/images/top.png" alt="tiny-LLM top image" width="720" style="max-width: 100%; height: auto;">
