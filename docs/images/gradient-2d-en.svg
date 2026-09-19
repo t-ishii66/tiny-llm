@@ -15,14 +15,14 @@
   <text x="626.02" y="324.99" class="note">w₁</text>
   <text x="380.01" y="79.98000000000002" class="note">w₂</text>
   <circle cx="380" cy="320" r="67" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.85"/>
-  <rect x="401" y="262" width="52" height="18" rx="6" fill="#f8fafc"/>
-  <text x="427" y="276" class="note" style="font-size:12px">loss=1</text>
+  <rect x="307" y="356" width="52" height="18" rx="6" fill="#f8fafc"/>
+  <text x="333" y="370" class="note" style="font-size:12px">loss=1</text>
   <circle cx="380" cy="320" r="133" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.6"/>
-  <rect x="448" y="215" width="52" height="18" rx="6" fill="#f8fafc"/>
-  <text x="474" y="229" class="note" style="font-size:12px">loss=4</text>
+  <rect x="260" y="403" width="52" height="18" rx="6" fill="#f8fafc"/>
+  <text x="286" y="417" class="note" style="font-size:12px">loss=4</text>
   <circle cx="380" cy="320" r="200" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.45"/>
-  <rect x="495" y="168" width="52" height="18" rx="6" fill="#f8fafc"/>
-  <text x="521" y="182" class="note" style="font-size:12px">loss=9</text>
+  <rect x="213" y="450" width="52" height="18" rx="6" fill="#f8fafc"/>
+  <text x="239" y="464" class="note" style="font-size:12px">loss=9</text>
   <text x="180" y="544" class="note" style="font-size:12px">0</text>
   <text x="247" y="544" class="note" style="font-size:12px">1</text>
   <text x="313" y="544" class="note" style="font-size:12px">2</text>
