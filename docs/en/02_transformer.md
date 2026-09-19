@@ -404,11 +404,11 @@ divide by the total to turn them into probabilities. The larger the score, the l
 $z$ is the sequence of numbers given as input, that is, the scores.
 Let's compute concretely with the "sat" row above (its first 3 elements).
 
-$$z = (\,0.3,\; 2.1,\; 0.8\,)$$
+$$z = (0.3, 2.1, 0.8)$$
 
 First we turn each element into $e^{z_i}$ so that all values are positive:
 
-$$e^{z} = (\,e^{0.3},\; e^{2.1},\; e^{0.8}\,) = (\,1.35,\; 8.17,\; 2.23\,)$$
+$$e^{z} = (e^{0.3}, e^{2.1}, e^{0.8}) = (1.35, 8.17, 2.23)$$
 
 Next we take their sum:
 
@@ -416,7 +416,7 @@ $$\sum_j e^{z_j} = 1.35 + 8.17 + 2.23 = 11.75$$
 
 Finally, dividing each element by this sum gives the probabilities:
 
-$$\text{softmax}(z) = \left(\, \frac{1.35}{11.75},\; \frac{8.17}{11.75},\; \frac{2.23}{11.75} \,\right) = (\,0.11,\; 0.70,\; 0.19\,)$$
+$$\text{softmax}(z) = \left( \frac{1.35}{11.75}, \frac{8.17}{11.75}, \frac{2.23}{11.75} \right) = (0.11, 0.70, 0.19)$$
 
 The total is $0.11 + 0.70 + 0.19 = 1.0$.
 "cat" (2.1), which had the highest score, gets the highest attention weight, 0.70.
@@ -478,7 +478,7 @@ We will see the implementation in Step 4 of §2.4.
 
 So far we have obtained "whom to attend to and how much" (the attention weights).
 This is the $\text{attn}(i, j)$ computed in the previous section — the attention that the $i$-th word
-directs at the $j$-th word, which for the "sat" row was $(0.11,\; 0.70,\; 0.19,\; 0,\; \dots)$.
+directs at the $j$-th word, which for the "sat" row was $(0.11, 0.70, 0.19, 0, \dots)$.
 What remains is the process of using this $\text{attn}(i, j)$ to build the final output.
 
 What we use for that is $V_j$. Since it only appeared briefly a while ago, let's review it.
@@ -492,7 +492,7 @@ Using the attention weights as coefficients, we mix these Values together:
 
 $$\text{out}_i = \sum_j \text{attn}(i, j) \cdot V_j$$
 
-For "sat", using the attention weights $(0.11,\; 0.70,\; 0.19)$ we just obtained:
+For "sat", using the attention weights $(0.11, 0.70, 0.19)$ we just obtained:
 
 ```
 output for "sat" = 0.11 × V₀("the") + 0.70 × V₁("cat") + 0.19 × V₂("sat")
@@ -983,7 +983,7 @@ Their initial values are random (biases are 0), and the values get determined as
 
 ### What Is ReLU?
 
-$$\text{ReLU}(z) = \max(0,\; z)$$
+$$\text{ReLU}(z) = \max(0, z)$$
 
 It is simply a function that truncates negative values to 0 and passes positive values through unchanged.
 

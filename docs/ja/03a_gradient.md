@@ -73,7 +73,7 @@ $$\frac{\partial\thinspace \text{loss}}{\partial\thinspace w_1} = 2(w_1 - 3), \q
 
 この2つをまとめたベクトルが **勾配（gradient）** です：
 
-$$\nabla \text{loss} = \left(\frac{\partial\thinspace \text{loss}}{\partial\thinspace w_1},\; \frac{\partial\thinspace \text{loss}}{\partial\thinspace w_2}\right)$$
+$$\nabla \text{loss} = \left(\frac{\partial\thinspace \text{loss}}{\partial\thinspace w_1},\thinspace \frac{\partial\thinspace \text{loss}}{\partial\thinspace w_2}\right)$$
 
 更新は各パラメータを **同時に** 行います：
 

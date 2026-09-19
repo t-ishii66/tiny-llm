@@ -73,7 +73,7 @@ $$\frac{\partial\thinspace \text{loss}}{\partial\thinspace w_1} = 2(w_1 - 3), \q
 
 The vector gathering these two together is the **gradient**:
 
-$$\nabla \text{loss} = \left(\frac{\partial\thinspace \text{loss}}{\partial\thinspace w_1},\; \frac{\partial\thinspace \text{loss}}{\partial\thinspace w_2}\right)$$
+$$\nabla \text{loss} = \left(\frac{\partial\thinspace \text{loss}}{\partial\thinspace w_1},\thinspace \frac{\partial\thinspace \text{loss}}{\partial\thinspace w_2}\right)$$
 
 The update is performed on each parameter **simultaneously**:
 
