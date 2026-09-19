@@ -162,6 +162,8 @@ def tokenize(text, vocab):
 
 ---
 
+![木陰でピクニックを楽しむAliceとBob](../images/chapter-01-break.png)
+
 ## 1.4 `make_training_data` — 「入力」と「正解」のペアを作る
 
 ここが最も重要です。LLM の学習は本質的に **「直前の単語列から、次の単語を予測する」** タスクです。
@@ -341,18 +343,7 @@ targets: torch.Tensor, shape = (28, 12)    ← 対応する正解
 
 ## 1.5 データの流れ — 全体像
 
-```
-                        build_vocab
-"the cat sat on ..."  ─────────────→  vocab:   {"the": 1, "cat": 2, ...}
-                                       id2word: {1: "the", 2: "cat", ...}
-
-                        tokenize
-"the cat sat on ..."  ─────────────→  [1, 2, 3, 4, 1, 5, 6, ...]
-
-                      make_training_data
-[1, 2, 3, 4, ...]    ─────────────→  inputs:  tensor (28, 12)
-                                       targets: tensor (28, 12)
-```
+![第1章のデータの流れ。コーパスの文字列から build_vocab で語彙を作り、tokenize で番号列に変え、make_training_data で inputs と targets のテンソル（各 (28, 12)）を作る。](../images/data-pipeline-ja.svg)
 
 ここまでで、モデルに渡す準備が整いました。
 

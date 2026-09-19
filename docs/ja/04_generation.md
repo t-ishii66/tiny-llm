@@ -80,6 +80,12 @@ x = torch.tensor([context])    # shape: (1, 4)
 logits = model.forward(x)      # shape: (1, 4, 10)
 ```
 
+形状の先頭にある **1** は、バッチ（セット）の数です。
+訓練では 28 セットをまとめて流していましたが、生成で入力するのは
+いま手元にある文脈 1 本だけなので、バッチの大きさは 1 になります。
+`torch.tensor([context])` と `context` をリストで 1 段包んでいるのは、
+この 1 セット分の軸を作るためです。
+
 4つの位置すべてで予測が出ますが、必要なのは **最後の位置** だけです。
 （最後の位置＝「ここまでの文脈を全て見た上での予測」）
 
@@ -116,30 +122,53 @@ next_id = torch.argmax(next_logit).item()   # → 1 (= "the")
 > torch.argmax(scores).item()   # → 2            ← .item() でPythonのintに
 > ```
 
+`logits[0, -1, :]` の **0** は「唯一のセット」を指します
+（訓練時の 28 セットと違い、ここには 1 本しか入っていません）。
+**-1** が最後の位置、**:** が語彙 10 単語分のスコアです。
+
 `argmax` は最もスコアの高いインデックスを返します。
 → "the cat sat on" の次は "the" と予測（コーパスでは "on" の後は常に "the"）。
 
-**Step 4: トークン列に追加して繰り返す**
+**Step 4: 予測した単語を入力に加えて、もう一度**
+
+ここが生成の肝です。Step 3 で予測した `"the"`（単語番号 1）を、
+**入力だったトークン列の末尾にそのまま足します**。
 
 ```python
 tokens.append(1)
-# tokens = [1, 2, 3, 4, 1]  ← "the cat sat on the"
-# → 次のループで "the cat sat on the" から次の単語を予測
+# 追加前: [1, 2, 3, 4]      ← "the cat sat on"       （元のプロンプト）
+# 追加後: [1, 2, 3, 4, 1]   ← "the cat sat on the"   （予測した the が増えた）
 ```
+
+すると次のループでは、この 5 単語が新しい入力になります。
+モデルから見れば、さっき自分が出した答えが、今度は「読むべき文脈」として戻ってくる形です。
+5 単語を読んで 6 単語目を予測し、それをまた末尾に足して……と繰り返すことで、
+文章がどんどん伸びていきます。
+
+第2章の最後で触れた「予測した単語を入力の末尾に足せば、もう一度同じことができる」を、
+`tokens.append()` の 1 行で実現しているわけです。
 
 ### 生成の流れ（具体例）
 
-```
-"the cat sat on"
-                  → 予測: "the"  → "the cat sat on the"
-                  → 予測: "mat"  → "the cat sat on the mat"
-                  → 予測: "."    → "the cat sat on the mat ."
-                  → 予測: "the"  → "the cat sat on the mat . the"
-                  → 予測: "dog"  → "the cat sat on the mat . the dog"
-                  ...
-```
+入力は 1 ステップごとに 1 単語ずつ伸びていきます。
+前のステップの入力に、予測した単語が足されたものが次の入力です。
+
+| ステップ | 入力（モデルに渡すトークン列） | 長さ | 予測 |
+|---|---|---|---|
+| 1 | `the cat sat on` | 4 | `the` |
+| 2 | `the cat sat on the` | 5 | `mat` |
+| 3 | `the cat sat on the mat` | 6 | `.` |
+| 4 | `the cat sat on the mat .` | 7 | `the` |
+| 5 | `the cat sat on the mat . the` | 8 | `dog` |
+| … | （1 ステップごとに 1 単語ずつ伸びる） | … | … |
+
+長さが `SEQ_LEN = 12` を超えると、`tokens[-SEQ_LEN:]` によって
+**古いほうから文脈の外に落ちて**いき、常に直近 12 単語だけがモデルに渡されます
+（第1章のコンテキスト長の話です）。
 
 ---
+
+![木陰で絵本を読みながら話すAliceとBob](../images/chapter-04-break.png)
 
 ## 4.3 Greedy Decoding の限界
 

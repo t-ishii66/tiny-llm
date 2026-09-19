@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="470" viewBox="0 0 760 470" role="img" aria-labelledby="t d">
+  <title id="t">The training loop</title>
+  <desc id="d">Forward makes a prediction, Loss measures how wrong it is, Backward computes the gradients, and Update nudges the parameters. These four steps repeat 200 times.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker>
+    <style>
+      text{font-family:"Helvetica Neue",Arial,sans-serif;fill:#172554;text-anchor:middle}
+      .st{font-size:18px;font-weight:700}.note{font-size:13px;fill:#475569}
+      .arc{fill:none;stroke:#2563eb;stroke-width:3;marker-end:url(#a)}
+    </style>
+  </defs>
+  <rect width="760" height="470" rx="24" fill="#f8fafc"/>
+  <text x="360" y="40" font-size="23" font-weight="700">The training loop — repeated 200 times</text>
+  <rect x="235" y="71" width="250" height="74" rx="14" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="360" y="94" class="st">① Forward</text>
+  <text x="360" y="114" class="note">predict with the current parameters</text>
+  <text x="360" y="133" class="note" style="font-size:12px">inputs → logits</text>
+  <rect x="425" y="221" width="250" height="74" rx="14" fill="#fce7f3" stroke="#db2777" stroke-width="2"/>
+  <text x="550" y="244" class="st">② Loss</text>
+  <text x="550" y="264" class="note">turn the error into a single number</text>
+  <text x="550" y="283" class="note" style="font-size:12px">compare logits with targets</text>
+  <rect x="235" y="371" width="250" height="74" rx="14" fill="#ffedd5" stroke="#ea580c" stroke-width="2"/>
+  <text x="360" y="394" class="st">③ Backward</text>
+  <text x="360" y="414" class="note">which way should each parameter move</text>
+  <text x="360" y="433" class="note" style="font-size:12px">compute gradients for every parameter</text>
+  <rect x="45" y="221" width="250" height="74" rx="14" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="170" y="244" class="st">④ Update</text>
+  <text x="170" y="264" class="note">nudge them a little</text>
+  <text x="170" y="283" class="note" style="font-size:12px">step against the gradient</text>
+  <path d="M489 114Q519.5 164.5 550 215" class="arc"/>
+  <path d="M550 301Q519.5 351.5 489 402" class="arc"/>
+  <path d="M231 402Q200.5 351.5 170 301" class="arc"/>
+  <path d="M170 215Q200.5 164.5 231 114" class="arc"/>
+  <text x="360" y="252" style="font-size:16px;fill:#475569">one lap = one epoch</text>
+  <text x="360" y="276" class="note">the parameters get slightly better</text>
+  <text x="360" y="452" class="note">training stops after 200 laps (EPOCHS = 200)</text>
+</svg>

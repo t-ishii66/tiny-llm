@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="480" viewBox="0 0 760 480" role="img" aria-labelledby="t d">
+  <title id="t">Loss and derivative with one parameter</title>
+  <desc id="d">The parabola loss(w)=(w-3)^2. At w=5 the tangent slope is +4, so w moves down; at w=1 the slope is -4, so w moves up; at w=3 the slope is 0 and the loss is minimal.</desc>
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#dc2626"/></marker>
+    <style>
+      text{font-family:"Helvetica Neue",Arial,sans-serif;fill:#172554;text-anchor:middle}
+      .note{font-size:14px;fill:#475569}.tan{fill:none;stroke:#f59e0b;stroke-width:3}
+      .mv{fill:none;stroke:#dc2626;stroke-width:3;marker-end:url(#ar)}
+    </style>
+  </defs>
+  <rect width="760" height="480" rx="24" fill="#f8fafc"/>
+  <text x="380" y="40" font-size="23" font-weight="700">loss(w) = (w − 3)² and its derivative (the tangent slope)</text>
+  <path d="M90 410.0H690" fill="none" stroke="#e2e8f0"/>
+  <text x="76" y="415.0" class="note" text-anchor="end">0</text>
+  <path d="M90 296.7H690" fill="none" stroke="#e2e8f0"/>
+  <text x="76" y="301.7" class="note" text-anchor="end">3</text>
+  <path d="M90 183.3H690" fill="none" stroke="#e2e8f0"/>
+  <text x="76" y="188.3" class="note" text-anchor="end">6</text>
+  <path d="M90 70.0H690" fill="none" stroke="#e2e8f0"/>
+  <text x="76" y="75.0" class="note" text-anchor="end">9</text>
+  <text x="90.0" y="436" class="note">0</text>
+  <text x="190.0" y="436" class="note">1</text>
+  <text x="290.0" y="436" class="note">2</text>
+  <text x="390.0" y="436" class="note">3</text>
+  <text x="490.0" y="436" class="note">4</text>
+  <text x="590.0" y="436" class="note">5</text>
+  <text x="690.0" y="436" class="note">6</text>
+  <path d="M90 410H700 M390.0 418V60" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="0"/>
+  <text x="714" y="415" class="note">w</text>
+  <text x="84" y="54" class="note">loss</text>
+  <path d="M90.0 70.0 L100.0 92.3 L110.0 113.8 L120.0 134.6 L130.0 154.6 L140.0 173.9 L150.0 192.4 L160.0 210.2 L170.0 227.2 L180.0 243.4 L190.0 258.9 L200.0 273.6 L210.0 287.6 L220.0 300.8 L230.0 313.3 L240.0 325.0 L250.0 336.0 L260.0 346.2 L270.0 355.6 L280.0 364.3 L290.0 372.2 L300.0 379.4 L310.0 385.8 L320.0 391.5 L330.0 396.4 L340.0 400.6 L350.0 404.0 L360.0 406.6 L370.0 408.5 L380.0 409.6 L390.0 410.0 L400.0 409.6 L410.0 408.5 L420.0 406.6 L430.0 404.0 L440.0 400.6 L450.0 396.4 L460.0 391.5 L470.0 385.8 L480.0 379.4 L490.0 372.2 L500.0 364.3 L510.0 355.6 L520.0 346.2 L530.0 336.0 L540.0 325.0 L550.0 313.3 L560.0 300.8 L570.0 287.6 L580.0 273.6 L590.0 258.9 L600.0 243.4 L610.0 227.2 L620.0 210.2 L630.0 192.4 L640.0 173.9 L650.0 154.6 L660.0 134.6 L670.0 113.8 L680.0 92.3 L690.0 70.0" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>
+  <path d="M510.0 379.8L670.0 138.0" class="tan"/>
+  <circle cx="590.0" cy="258.9" r="7" fill="#1d4ed8"/>
+  <text x="590.0" y="232.9" class="note" style="fill:#b45309;font-size:15px">slope +4 → decrease w</text>
+  <path d="M590.0 396H515.0" class="mv"/>
+  <path d="M110.0 138.0L270.0 379.8" class="tan"/>
+  <circle cx="190.0" cy="258.9" r="7" fill="#1d4ed8"/>
+  <text x="190.0" y="232.9" class="note" style="fill:#b45309;font-size:15px">slope −4 → increase w</text>
+  <path d="M190.0 396H265.0" class="mv"/>
+  <path d="M305.0 410.0L475.0 410.0" class="tan"/>
+  <circle cx="390.0" cy="410.0" r="7" fill="#16a34a"/>
+  <text x="390.0" y="386.0" class="note" style="fill:#15803d;font-size:15px">slope 0 → minimum</text>
+  <text x="380" y="462" class="note">Move w <tspan font-weight="700">opposite</tspan> to the derivative (the tangent slope) and the loss goes down</text>
+</svg>

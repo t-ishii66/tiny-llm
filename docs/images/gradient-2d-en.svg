@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="520" viewBox="0 0 760 520" role="img" aria-labelledby="t d">
+  <title id="t">Contour lines and gradient with two parameters</title>
+  <desc id="d">Contour lines of loss(w1,w2)=(w1-3)^2+(w2+1)^2. The minimum is at (3, -1). At (5, 1) the gradient points up and to the right, and the update step goes the opposite way.</desc>
+  <defs>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#dc2626"/></marker>
+    <marker id="u" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#2563eb"/></marker>
+    <style>
+      text{font-family:"Helvetica Neue",Arial,sans-serif;fill:#172554;text-anchor:middle}
+      .note{font-size:14px;fill:#475569}
+    </style>
+  </defs>
+  <rect width="760" height="520" rx="24" fill="#f8fafc"/>
+  <text x="380" y="40" font-size="23" font-weight="700">Contour lines of loss(w₁, w₂) = (w₁ − 3)² + (w₂ + 1)²</text>
+  <ellipse cx="385.0" cy="260.0" rx="91.7" ry="56.7" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.75"/>
+  <text x="476.7" y="254.0" class="note" style="font-size:12px">loss=1</text>
+  <ellipse cx="385.0" cy="260.0" rx="183.3" ry="113.3" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.55"/>
+  <text x="568.3" y="254.0" class="note" style="font-size:12px">loss=4</text>
+  <ellipse cx="385.0" cy="260.0" rx="275.0" ry="170.0" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.4"/>
+  <text x="660.0" y="254.0" class="note" style="font-size:12px">loss=9</text>
+  <ellipse cx="385.0" cy="260.0" rx="366.7" ry="226.7" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.28"/>
+  <text x="751.7" y="254.0" class="note" style="font-size:12px">loss=16</text>
+  <path d="M90 260.0H680 M385.0 450V70" fill="none" stroke="#cbd5e1"/>
+  <circle cx="385.0" cy="260.0" r="7" fill="#16a34a"/>
+  <text x="385.0" y="286.0" class="note" style="fill:#15803d">minimum (3, −1)</text>
+  <circle cx="568.3" cy="146.7" r="7" fill="#1d4ed8"/>
+  <text x="626.3" y="130.7" class="note">current point (5, 1)</text>
+  <path d="M568.3 146.7l82.5 -51.0" fill="none" stroke="#dc2626" stroke-width="3.5" marker-end="url(#g)"/>
+  <text x="690.8" y="87.7" class="note" style="fill:#b91c1c">gradient (+4, +4)<tspan x="690.8" dy="18">the direction loss increases</tspan></text>
+  <path d="M568.3 146.7l-82.5 51.0" fill="none" stroke="#2563eb" stroke-width="3.5" marker-end="url(#u)"/>
+  <text x="475.8" y="227.7" class="note" style="fill:#1d4ed8">the update goes the other way<tspan x="475.8" dy="18">toward (4.6, 0.6)</tspan></text>
+  <text x="110.0" y="472" class="note" style="font-size:12px">0</text>
+  <text x="201.7" y="472" class="note" style="font-size:12px">1</text>
+  <text x="293.3" y="472" class="note" style="font-size:12px">2</text>
+  <text x="385.0" y="472" class="note" style="font-size:12px">3</text>
+  <text x="476.7" y="472" class="note" style="font-size:12px">4</text>
+  <text x="568.3" y="472" class="note" style="font-size:12px">5</text>
+  <text x="660.0" y="472" class="note" style="font-size:12px">6</text>
+  <text x="694" y="265.0" class="note">w₁</text>
+  <text x="385.0" y="62" class="note">w₂</text>
+  <text x="380" y="502" class="note">The gradient points where loss rises fastest. Gradient descent walks the <tspan font-weight="700">opposite</tspan> way</text>
+</svg>

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="720" viewBox="0 0 760 720" role="img" aria-labelledby="title desc">
+  <title id="title">Transformer 内部のデータ変換</title>
+  <desc id="desc">単語IDのテンソル (28, 12) が埋め込みで (28, 12, 64) になり、Self-Attention と Feed-Forward を通っても形は変わらず、最後に出力射影で (28, 12, 10) のスコアになります。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#64748b"/></marker>
+    <style>
+      text{font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;fill:#172554;text-anchor:middle}
+      .shape{font-size:20px;font-weight:700;font-family:"SFMono-Regular",Consolas,monospace}
+      .note{font-size:14px;fill:#475569}
+      .op{font-size:15px;fill:#334155}
+      .flow{fill:none;stroke:#64748b;stroke-width:2.5;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="760" height="720" rx="24" fill="#f8fafc"/>
+  <text x="300" y="44" font-size="25" font-weight="700">Transformer 内部のデータ変換</text>
+  <text x="300" y="70" class="note">下から上へ · 形状がどう変わるか</text>
+  <rect x="110" y="620" width="380" height="62" rx="14" fill="#ffffff" stroke="#94a3b8"/>
+  <text x="300" y="648" class="shape">token_ids (28, 12)</text><text x="300" y="670" class="note">整数（単語番号）</text>
+  <rect x="110" y="500" width="380" height="62" rx="14" fill="#dbeafe" stroke="#2563eb"/>
+  <text x="300" y="528" class="shape">x (28, 12, 64)</text><text x="300" y="550" class="note">各単語が 64 次元の入力埋め込みに</text>
+  <rect x="110" y="380" width="380" height="62" rx="14" fill="#ede9fe" stroke="#7c3aed"/>
+  <text x="300" y="408" class="shape">x (28, 12, 64)</text><text x="300" y="430" class="note">文脈を考慮したベクトルに変化</text>
+  <rect x="110" y="260" width="380" height="62" rx="14" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="300" y="288" class="shape">x (28, 12, 64)</text><text x="300" y="310" class="note">各単語の表現をさらに変換</text>
+  <rect x="110" y="140" width="380" height="62" rx="14" fill="#fce7f3" stroke="#db2777"/>
+  <text x="300" y="168" class="shape">logits (28, 12, 10)</text><text x="300" y="190" class="note">各位置で語彙 10 単語分のスコア</text>
+  <path d="M300 594V564" class="flow"/>
+  <text x="300" y="588" class="op">Token Embedding ＋ Positional Embedding</text>
+  <path d="M300 474V444" class="flow"/>
+  <text x="300" y="468" class="op">Self-Attention</text>
+  <path d="M300 354V324" class="flow"/>
+  <text x="300" y="348" class="op">Feed-Forward</text>
+  <path d="M300 234V204" class="flow"/>
+  <text x="300" y="228" class="op">最終 Layer Norm → 出力射影（× tok_emb.T）</text>
+  <path d="M520 560V236" fill="none" stroke="#f59e0b" stroke-width="3"/>
+  <path d="M520 560H504 M520 236H504" fill="none" stroke="#f59e0b" stroke-width="3"/>
+  <text x="612" y="386" style="fill:#b45309;font-size:15px">Transformer</text>
+  <text x="612" y="408" style="fill:#b45309;font-size:15px">ブロック × 2</text>
+  <text x="612" y="436" style="fill:#b45309;font-size:14px">形は変わらない</text>
+</svg>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="1120" viewBox="0 0 760 1120" role="img" aria-labelledby="title desc">
+  <title id="title">tiny-LLM Transformer の全体構造</title>
+  <desc id="desc">下から上へ、単語ID、トークン埋め込みと位置埋め込み、2つのPre-LN Transformerブロック、最終正規化、重み共有した出力射影、スコアへ進みます。各ブロックにはAttentionとFFN、それぞれの残差接続があります。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#64748b"/></marker>
+    <marker id="skip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#ea580c"/></marker>
+    <style>
+      text{font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;fill:#172554;text-anchor:middle}
+      .label{font-size:19px;font-weight:700}.note{font-size:14px;fill:#475569}
+      .flow{fill:none;stroke:#64748b;stroke-width:2.5;marker-end:url(#arrow)}.plain{fill:none;stroke:#64748b;stroke-width:2.5}
+      .residual{fill:none;stroke:#ea580c;stroke-width:3;marker-end:url(#skip)}
+    </style>
+  </defs>
+  <rect width="760" height="1120" rx="24" fill="#f8fafc"/>
+  <text x="340" y="42" font-size="27" font-weight="700">tiny-LLM · Transformer の全体像</text>
+  <text x="340" y="69" class="note">下から上へ読みます · 12トークンの1系列を表示</text>
+  <rect x="150" y="92" width="380" height="66" rx="14" fill="#fce7f3" stroke="#db2777"/>
+  <text x="340" y="120" class="label">次の単語のスコア · Logits</text><text x="340" y="143" class="note">12 × 10 · 各位置で語彙10個分のスコア</text>
+  <path d="M340 188V162" class="flow"/>
+  <rect x="150" y="188" width="380" height="64" rx="14" fill="#e0e7ff" stroke="#6366f1"/>
+  <text x="340" y="215" class="label">出力射影</text><text x="340" y="239" class="note">× tok_emb.T · トークン埋め込みの重みを再利用</text>
+  <path d="M340 276V256" class="flow"/>
+  <rect x="190" y="276" width="300" height="44" rx="12" fill="#e2e8f0" stroke="#94a3b8"/><text x="340" y="304" class="label">最終 Layer Norm</text>
+  <rect x="70" y="348" width="620" height="474" rx="20" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="280" y="381" class="label">Transformer ブロック</text>
+  <rect x="480" y="360" width="186" height="32" rx="16" fill="#172554"/><text x="573" y="382" style="fill:white;font-size:15px;font-weight:700">× 2 個を直列に接続</text>
+  <text x="380" y="409" class="note">重みはブロックごとに別 · 形状は 12 × 64 のまま</text>
+  <path d="M340 493V478 M340 580V555 M340 637V622 M340 688V673 M340 764V744 M340 862V806" class="flow"/>
+  <path d="M340 442V348" class="plain"/>
+  <path d="M340 348V324" class="flow"/>
+  <circle cx="340" cy="460" r="18" fill="#ffedd5" stroke="#ea580c" stroke-width="2"/><text x="340" y="467" font-size="25">+</text>
+  <rect x="170" y="493" width="340" height="62" rx="12" fill="#dcfce7" stroke="#16a34a"/><text x="340" y="519" class="label">Feed-Forward</text><text x="340" y="542" class="note">64 → 128 → ReLU → 64 · 各単語を個別に変換</text>
+  <rect x="190" y="580" width="300" height="42" rx="12" fill="#e2e8f0" stroke="#94a3b8"/><text x="340" y="607" class="label">Layer Norm</text>
+  <path d="M340 632H594V460H362" class="residual"/><text x="626" y="551" style="fill:#c2410c;font-size:15px">残差接続</text>
+  <circle cx="340" cy="655" r="18" fill="#ffedd5" stroke="#ea580c" stroke-width="2"/><text x="340" y="662" font-size="25">+</text>
+  <rect x="170" y="688" width="340" height="56" rx="12" fill="#ede9fe" stroke="#7c3aed"/><text x="340" y="712" class="label">因果 Self-Attention</text><text x="340" y="733" class="note">4ヘッド · 自分と過去の単語だけを参照</text>
+  <rect x="190" y="764" width="300" height="38" rx="12" fill="#e2e8f0" stroke="#94a3b8"/><text x="340" y="789" class="label">Layer Norm</text>
+  <path d="M340 811H594V655H362" class="residual"/><text x="626" y="737" style="fill:#c2410c;font-size:15px">残差接続</text>
+  <rect x="150" y="862" width="380" height="58" rx="14" fill="#dbeafe" stroke="#2563eb"/><text x="340" y="887" class="label">入力埋め込み</text><text x="340" y="909" class="note">x · 12トークン × 64次元</text>
+  <path d="M340 948V924" class="flow"/>
+  <rect x="110" y="948" width="460" height="54" rx="14" fill="#e0f2fe" stroke="#0284c7"/><text x="340" y="972" class="label">トークン埋め込み ＋ 位置埋め込み</text><text x="340" y="991" class="note">単語のベクトルを取り出し、学習可能な位置ベクトルを加算</text>
+  <path d="M340 1030V1006" class="flow"/>
+  <rect x="190" y="1030" width="300" height="52" rx="14" fill="#ffffff" stroke="#94a3b8"/><text x="340" y="1052" class="label">単語 ID</text><text x="340" y="1072" class="note">入力12トークンに対応する12個の整数</text>
+</svg>
