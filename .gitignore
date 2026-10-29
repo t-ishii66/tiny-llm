@@ -20,3 +20,10 @@ __pycache__/
 
 # Claude Code local settings (machine-local; shared settings.json stays tracked)
 .claude/settings.local.json
+
+# Secrets (placeholders stay tracked)
+.env
+.env.*
+!.env.example
+!.env.template
+!.env.sample

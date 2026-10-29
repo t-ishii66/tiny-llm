@@ -9,6 +9,8 @@ canonical_url: "https://t-ishii66.github.io/tiny-llm/"
 
 **English** · [日本語](README-jp.md)
 
+> 📖 For the best reading experience with properly rendered math and figures, see the GitHub Pages version: <https://t-ishii66.github.io/tiny-llm/>
+
 <p>
   <img src="docs/images/top.png" alt="tiny-LLM top image" width="720" style="max-width: 100%; height: auto;">
 </p>

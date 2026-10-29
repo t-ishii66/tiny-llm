@@ -8,6 +8,8 @@ canonical_url: "https://t-ishii66.github.io/tiny-llm/README-jp.html"
 
 [English](README.md) · **日本語**
 
+> 📖 数式や図をきれいに表示して読みたい場合は、GitHub Pages 版 <https://t-ishii66.github.io/tiny-llm/README-jp.html> をご覧ください。
+
 <p>
   <img src="docs/images/top.png" alt="tiny-LLM top image" width="720" style="max-width: 100%; height: auto;">
 </p>
